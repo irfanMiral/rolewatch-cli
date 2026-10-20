@@ -1,6 +1,6 @@
 {
   "name": "rolewatch-cli",
-  "description": "Job hunting from Claude Code, over rolewatch.irfanmiral.com — 3.3M+ IT roles crawled straight from 294K company career boards.",
+  "description": "Job hunting from Claude Code, over rolewatch.irfanmiral.com — IT roles crawled straight from company career boards.",
   "owner": {
     "name": "Irfan Miral",
     "url": "https://rolewatch.irfanmiral.com"

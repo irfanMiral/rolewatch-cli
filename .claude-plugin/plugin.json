@@ -1,7 +1,7 @@
 {
   "name": "rolewatch",
   "version": "0.2.0",
-  "description": "Search, filter, measure your skills against, and apply to IT jobs from the terminal via the rolewatch.irfanmiral.com CLI — 3.3M+ roles crawled straight from 294K company career boards. Ships task-shaped agent skills and the /job-search, /market-fit, /tailor-cv, /track-applications and /triage-inbox commands.",
+  "description": "Search, filter, measure your skills against, and apply to IT jobs from the terminal via the rolewatch.irfanmiral.com CLI — roles crawled straight from company career boards. Ships task-shaped agent skills and the /job-search, /market-fit, /tailor-cv, /track-applications and /triage-inbox commands.",
   "author": {
     "name": "Irfan Miral",
     "url": "https://rolewatch.irfanmiral.com"
