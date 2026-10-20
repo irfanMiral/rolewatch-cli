@@ -16,11 +16,11 @@ import (
 // fresh attempt can end in a real submitted application, and the browser is the only
 // place a candidate can watch it happen and undo it — so there is no `run`/`start`
 // subcommand here, and there will not be one: queue a job for auto-apply from
-// freehire.me itself, then use this group to watch it through.
+// rolewatch.irfanmiral.com itself, then use this group to watch it through.
 func newAutoApplyCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auto-apply",
-		Short: "Track and review an auto-apply attempt already queued on freehire.me",
+		Short: "Track and review an auto-apply attempt already queued on rolewatch.irfanmiral.com",
 		Long: "Acts on an attempt already queued from the website — starting a new one is " +
 			"cookie-only on the server (a real application can go out, and the browser is " +
 			"the only place you can watch it and undo it), so there is no command for " +
@@ -103,7 +103,7 @@ func newAutoApplyStatusCmd() *cobra.Command {
 			}
 			out := cmd.OutOrStdout()
 			if app.AutoApply == nil {
-				fmt.Fprintf(out, "No auto-apply attempt for %s yet — queue one from freehire.me.\n", slug)
+				fmt.Fprintf(out, "No auto-apply attempt for %s yet — queue one from rolewatch.irfanmiral.com.\n", slug)
 				return nil
 			}
 			printAutoApplyStatus(out, *app.AutoApply)
@@ -126,14 +126,14 @@ func printAutoApplyStatus(out io.Writer, s autoApplyStatusLine) {
 		if n := len(s.ResolvedPreview.Pending); n > 0 {
 			fmt.Fprintf(out, "  (%d field(s) resolve at submit time)\n", n)
 		}
-		fmt.Fprintf(out, "\nNext: freehire auto-apply review %d --approve|--decline\n", s.QueueID)
+		fmt.Fprintf(out, "\nNext: rolewatch auto-apply review %d --approve|--decline\n", s.QueueID)
 	case "blocked":
 		fmt.Fprintln(out, "\nUnanswered questions:")
 		for _, u := range s.Unmapped {
 			fmt.Fprintf(out, "  %s — %s\n", u.Label, u.Reason)
 		}
 	case "tailoring":
-		fmt.Fprintf(out, "\nNext: freehire auto-apply tailor %d\n", s.QueueID)
+		fmt.Fprintf(out, "\nNext: rolewatch auto-apply tailor %d\n", s.QueueID)
 	}
 }
 
@@ -141,7 +141,7 @@ func newAutoApplyTailorCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "tailor <queue-id>",
 		Short: "Start or continue tailoring the CV for a queued auto-apply attempt",
-		Long: "Copy the queue id from `freehire auto-apply status <job-slug>`. Idempotent: " +
+		Long: "Copy the queue id from `rolewatch auto-apply status <job-slug>`. Idempotent: " +
 			"calling it again continues the same tailoring session rather than starting a " +
 			"second one.",
 		Args: cobra.ExactArgs(1),
@@ -162,7 +162,7 @@ func newAutoApplyTailorCmd() *cobra.Command {
 				printJSON(cmd, data)
 				return nil
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "Tailoring started for queue entry %d\nNext: freehire auto-apply status <job-slug>\n", id)
+			fmt.Fprintf(cmd.OutOrStdout(), "Tailoring started for queue entry %d\nNext: rolewatch auto-apply status <job-slug>\n", id)
 			return nil
 		},
 	}
@@ -229,7 +229,7 @@ func autoApplyDecision(approve, decline bool) (string, error) {
 func autoApplyQueueID(arg string) (int64, error) {
 	id, err := strconv.ParseInt(strings.TrimSpace(arg), 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("invalid queue id %q — copy it from `freehire auto-apply status <job-slug>`", arg)
+		return 0, fmt.Errorf("invalid queue id %q — copy it from `rolewatch auto-apply status <job-slug>`", arg)
 	}
 	return id, nil
 }

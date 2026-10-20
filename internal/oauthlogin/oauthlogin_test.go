@@ -11,7 +11,7 @@ import (
 )
 
 // fakeOAuthServer answers dynamic registration and the token exchange exactly
-// as freehire's backend does, checking the PKCE verifier against whatever
+// as rolewatch's backend does, checking the PKCE verifier against whatever
 // challenge rode the authorize URL the browser stub below was given. It does
 // not implement /authorize — the stub "visits" the authorize screen by going
 // straight to the local callback instead, exactly what a real browser does

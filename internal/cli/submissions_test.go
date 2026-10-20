@@ -16,7 +16,7 @@ func TestSubmissionsListsMine(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "submissions", "--api-url", srv.URL)
 	if err != nil {
@@ -38,7 +38,7 @@ func TestSubmissionsPendingShowsSubmitter(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "submissions", "pending", "--api-url", srv.URL)
 	if err != nil {
@@ -60,7 +60,7 @@ func TestSubmissionsApprove(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "submissions", "approve", "5", "--api-url", srv.URL)
 	if err != nil {
@@ -84,7 +84,7 @@ func TestSubmissionsRejectSendsReason(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "submissions", "reject", "5", "--reason", "dup", "--api-url", srv.URL)
 	if err != nil {

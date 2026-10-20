@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-// cvFakeAPI mimics the freehire CV-tailoring endpoints behind a Bearer=good gate.
+// cvFakeAPI mimics the rolewatch CV-tailoring endpoints behind a Bearer=good gate.
 func cvFakeAPI(t *testing.T) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()

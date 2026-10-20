@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/strelov1/freehire-cli/internal/client"
+	"rolewatch-cli/internal/client"
 )
 
 // TestDecodeBatchAcceptsBothShapes asserts a caller can pipe either a bare array —
@@ -139,7 +139,7 @@ func runWithStdin(t *testing.T, stdin string, args ...string) (string, error) {
 func TestInboxListSendsTheAgentFlags(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "inbox", "list", "--unclassified", "--body", "--source", "external", "--api-url", api.URL)
 	if err != nil {
@@ -161,7 +161,7 @@ func TestInboxListSendsTheAgentFlags(t *testing.T) {
 func TestInboxPushReadsStdin(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := runWithStdin(t, `[{"external_id":"<a@acme>","subject":"Hi"}]`,
 		"inbox", "push", "--api-url", api.URL)
@@ -188,7 +188,7 @@ func TestInboxPushReadsStdin(t *testing.T) {
 func TestInboxTriageSendsSignalAndSlug(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	if _, err := run(t, "inbox", "triage", "7", "rejection", "--slug", "go-dev-acme", "--api-url", api.URL); err != nil {
 		t.Fatalf("triage: %v", err)

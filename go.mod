@@ -1,4 +1,4 @@
-module github.com/strelov1/freehire-cli
+module rolewatch-cli
 
 go 1.25.5
 

@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-// fakeAPI is an httptest server mimicking the freehire API envelope. It rejects
+// fakeAPI is an httptest server mimicking the rolewatch API envelope. It rejects
 // any request whose bearer token is not "good" with 401, so the client's auth
 // header and error mapping are both exercised.
 func fakeAPI(t *testing.T) *httptest.Server {

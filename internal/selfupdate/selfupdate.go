@@ -1,6 +1,6 @@
-// Package selfupdate checks GitHub for newer freehire-cli releases and
+// Package selfupdate checks GitHub for newer rolewatch-cli releases and
 // installs them over the running binary. It talks to the GitHub REST API
-// directly, not the freehire API, so it has no dependency on internal/client.
+// directly, not the rolewatch API, so it has no dependency on internal/client.
 package selfupdate
 
 import (
@@ -16,9 +16,9 @@ import (
 	"strings"
 )
 
-// repoAPIURL is the GitHub API endpoint for this repo's latest release.
+// repoAPIURL is the RoleWatch download server's latest-release manifest (GitHub release JSON shape).
 // A var, not a const, so tests can point it at an httptest.Server.
-var repoAPIURL = "https://api.github.com/repos/strelov1/freehire-cli/releases/latest"
+var repoAPIURL = "https://rolewatch.irfanmiral.com/dl/latest.json"
 
 // Release is a GitHub release: its tag, and its assets by filename.
 type Release struct {
@@ -99,9 +99,9 @@ func versionParts(v string) [3]int {
 }
 
 // AssetName is the release asset this OS/arch expects, matching install.sh's
-// naming (freehire_<os>_<arch>).
+// naming (rolewatch_<os>_<arch>).
 func AssetName() string {
-	return fmt.Sprintf("freehire_%s_%s", runtime.GOOS, runtime.GOARCH)
+	return fmt.Sprintf("rolewatch_%s_%s", runtime.GOOS, runtime.GOARCH)
 }
 
 // Apply downloads downloadURL and replaces the running binary with it.
@@ -132,7 +132,7 @@ func apply(ctx context.Context, execPath, downloadURL string) error {
 	// The temp file lives beside execPath so the final rename is same-filesystem
 	// (a cross-device os.Rename fails outright).
 	dir := filepath.Dir(execPath)
-	tmp, err := os.CreateTemp(dir, ".freehire-update-*")
+	tmp, err := os.CreateTemp(dir, ".rolewatch-update-*")
 	if err != nil {
 		return permissionHint(err, dir)
 	}
@@ -162,7 +162,7 @@ func apply(ctx context.Context, execPath, downloadURL string) error {
 // sudo, mirroring install.sh's own fallback for an unwritable install dir.
 func permissionHint(err error, path string) error {
 	if os.IsPermission(err) {
-		return fmt.Errorf("%w — re-run with sudo (freehire is installed at %s)", err, path)
+		return fmt.Errorf("%w — re-run with sudo (rolewatch is installed at %s)", err, path)
 	}
 	return err
 }

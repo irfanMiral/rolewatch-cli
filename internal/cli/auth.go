@@ -11,9 +11,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/strelov1/freehire-cli/internal/client"
-	"github.com/strelov1/freehire-cli/internal/config"
-	"github.com/strelov1/freehire-cli/internal/oauthlogin"
+	"rolewatch-cli/internal/client"
+	"rolewatch-cli/internal/config"
+	"rolewatch-cli/internal/oauthlogin"
 )
 
 func newAuthCmd() *cobra.Command {
@@ -25,7 +25,7 @@ func newAuthCmd() *cobra.Command {
 func newAuthLoginCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Sign in via browser (OAuth) or an API key, storing a token in ~/.freehire/creds.json",
+		Short: "Sign in via browser (OAuth) or an API key, storing a token in ~/.rolewatch/creds.json",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			base := config.DefaultAPIURL

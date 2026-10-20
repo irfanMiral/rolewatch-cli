@@ -1,4 +1,4 @@
-// Package client is a thin HTTP client for the freehire API. It attaches an API
+// Package client is a thin HTTP client for the rolewatch API. It attaches an API
 // key (Authorization: Bearer) when one is configured — omitting it for public
 // read endpoints — and returns the raw `data` field of each response, so callers
 // can print it verbatim (--json) or decode it.
@@ -16,7 +16,7 @@ import (
 	"strings"
 )
 
-// Client talks to the freehire API at baseURL, sending the API key as a bearer
+// Client talks to the rolewatch API at baseURL, sending the API key as a bearer
 // token when one is set (an empty token means unauthenticated public reads).
 type Client struct {
 	baseURL string
@@ -347,7 +347,7 @@ func (c *Client) EditJob(ctx context.Context, slug string, p EditJobParams) (jso
 	return env.Data, err
 }
 
-// Contribute hands one job link to freehire (POST /jobs/resolve) — the same intake the
+// Contribute hands one job link to rolewatch (POST /jobs/resolve) — the same intake the
 // website, the Telegram bot and the browser extension use. The server checks the catalog,
 // imports the vacancy when anything can read it, and records the board behind it for
 // onboarding either way; the answer says which of those happened.

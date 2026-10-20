@@ -12,7 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/strelov1/freehire-cli/internal/client"
+	"rolewatch-cli/internal/client"
 )
 
 // signalVocabulary lists the classification labels `inbox triage` accepts, for the
@@ -46,14 +46,14 @@ type inboxRow struct {
 }
 
 // newInboxCmd is the `inbox` group: read the caller's mail and record an agent's
-// triage of it. freehire does not fetch mail here — the caller's own mail client
+// triage of it. rolewatch does not fetch mail here — the caller's own mail client
 // does that, and `inbox push` is where its output enters the inbox.
 func newInboxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "inbox",
 		Short: "Read and triage your job-application mail",
 		Long: "Read the mail linked to your job search and record what each message is.\n\n" +
-			"freehire fetches no mail here: your own client (himalaya, mbsync, anything\n" +
+			"rolewatch fetches no mail here: your own client (himalaya, mbsync, anything\n" +
 			"IMAP) does that, and `inbox push` hands the result over. `inbox list\n" +
 			"--unclassified --body` is then the agent's work queue, and `inbox triage`\n" +
 			"records its verdict and moves the application's stage.\n\n" +

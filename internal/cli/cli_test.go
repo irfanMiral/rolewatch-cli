@@ -11,10 +11,10 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/strelov1/freehire-cli/internal/config"
+	"rolewatch-cli/internal/config"
 )
 
-// fakeAPI mimics the freehire API; any request without "Bearer good" is 401.
+// fakeAPI mimics the rolewatch API; any request without "Bearer good" is 401.
 func fakeAPI(t *testing.T) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()
@@ -53,8 +53,8 @@ func run(t *testing.T, args ...string) (string, error) {
 func TestAuthLoginValidatesAndWritesCreds(t *testing.T) {
 	srv := fakeAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "")
-	t.Setenv("FREEHIRE_API_URL", "")
+	t.Setenv("ROLEWATCH_TOKEN", "")
+	t.Setenv("ROLEWATCH_API_URL", "")
 
 	out, err := run(t, "auth", "login", "--token", "good", "--api-url", srv.URL)
 	if err != nil {
@@ -83,7 +83,7 @@ func TestAuthLoginRejectsBadKey(t *testing.T) {
 func TestSearchUsesEnvToken(t *testing.T) {
 	srv := fakeAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "search", "golang", "--api-url", srv.URL)
 	if err != nil {
@@ -97,7 +97,7 @@ func TestSearchUsesEnvToken(t *testing.T) {
 func TestSearchJSONPassthrough(t *testing.T) {
 	srv := fakeAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "--json", "search", "golang", "--api-url", srv.URL)
 	if err != nil {
@@ -115,7 +115,7 @@ func TestSearchJSONPassthrough(t *testing.T) {
 func TestApplyConfirms(t *testing.T) {
 	srv := fakeAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "apply", "go-dev", "--api-url", srv.URL)
 	if err != nil {
@@ -139,8 +139,8 @@ func TestSearchWithoutTokenRunsAnonymously(t *testing.T) {
 	t.Cleanup(srv.Close)
 
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "")
-	t.Setenv("FREEHIRE_API_URL", "")
+	t.Setenv("ROLEWATCH_TOKEN", "")
+	t.Setenv("ROLEWATCH_API_URL", "")
 
 	out, err := run(t, "search", "golang", "--api-url", srv.URL)
 	if err != nil {
@@ -166,7 +166,7 @@ func TestSearchFiltersMapToFacets(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	_, err := run(t, "search", "golang",
 		"--remote", "--region", "eu", "--region", "us", "--company", "acme",
@@ -199,7 +199,7 @@ func TestSaveAndMy(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "save", "go-dev", "--api-url", srv.URL)
 	if err != nil || !strings.Contains(out, "Saved: go-dev") {
@@ -227,7 +227,7 @@ func TestStageCmd(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "stage", "go-dev", "interview", "--api-url", srv.URL)
 	if err != nil {
@@ -251,7 +251,7 @@ func TestNoteCmd(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	// Multi-word note without quoting: trailing args join into the note text.
 	out, err := run(t, "note", "go-dev", "call", "back", "monday", "--api-url", srv.URL)
@@ -277,7 +277,7 @@ func TestCompanyCmd(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "company", "acme", "--api-url", srv.URL)
 	if err != nil {
@@ -296,7 +296,7 @@ func TestMyShowsStageAndNote(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "my", "--api-url", srv.URL)
 	if err != nil {
@@ -326,7 +326,7 @@ func TestJobsAddAndEdit(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "jobs", "add", "--api-url", srv.URL,
 		"--url", "https://acme.example/jobs/1", "--source", "workatastartup",
@@ -361,7 +361,7 @@ func TestJobsAddAndEdit(t *testing.T) {
 
 func TestJobsEditRequiresAField(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 	if _, err := run(t, "jobs", "edit", "some-slug", "--api-url", "http://unused.test"); err == nil {
 		t.Error("jobs edit with no field flags should error")
 	}
@@ -385,7 +385,7 @@ func TestMarketFitSendsSkillsBodyAndFacetQuery(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "market-fit",
 		"--skills", "go,docker", "--skills", "react",
@@ -415,7 +415,7 @@ func TestMarketFitSendsSkillsBodyAndFacetQuery(t *testing.T) {
 
 func TestMarketFitRequiresSkills(t *testing.T) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 	if _, err := run(t, "market-fit", "--api-url", "http://unused"); err == nil {
 		t.Fatal("market-fit without --skills should error")
 	}
@@ -433,7 +433,7 @@ func TestFacetsListsValuesAndStats(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "facets", "--category", "backend", "--api-url", srv.URL)
 	if err != nil {
@@ -493,7 +493,7 @@ func TestApplyOnADate(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "apply", "go-dev", "--on", "2026-07-27", "--api-url", srv.URL)
 	if err != nil {

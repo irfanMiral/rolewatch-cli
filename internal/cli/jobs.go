@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/strelov1/freehire-cli/internal/client"
+	"rolewatch-cli/internal/client"
 )
 
 func newSearchCmd() *cobra.Command {
@@ -27,7 +27,7 @@ The query understands four operators:
 Wrap the whole query in single quotes when it contains double quotes, or the
 shell strips them:
 
-  freehire search 'title:"product owner" -junior OR title:produktchef'`,
+  rolewatch search 'title:"product owner" -junior OR title:produktchef'`,
 		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, _, err := publicClient(cmd)

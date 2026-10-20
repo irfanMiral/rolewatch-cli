@@ -1,7 +1,7 @@
-BINARY := freehire
+BINARY := rolewatch
 DIST := dist
 VERSION := $(shell git describe --tags --dirty --always)
-LDFLAGS := -X github.com/strelov1/freehire-cli/internal/cli.Version=$(VERSION)
+LDFLAGS := -X rolewatch-cli/internal/cli.Version=$(VERSION)
 PLATFORMS := darwin/amd64 darwin/arm64 linux/amd64 linux/arm64
 
 .PHONY: build

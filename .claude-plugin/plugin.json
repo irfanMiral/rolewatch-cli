@@ -1,13 +1,13 @@
 {
-  "name": "freehire",
+  "name": "rolewatch",
   "version": "0.2.0",
-  "description": "Search, filter, measure your skills against, and apply to IT jobs from the terminal via the freehire.me CLI — 3.3M+ roles crawled straight from 294K company career boards. Ships task-shaped agent skills and the /job-search, /market-fit, /tailor-cv, /track-applications and /triage-inbox commands.",
+  "description": "Search, filter, measure your skills against, and apply to IT jobs from the terminal via the rolewatch.irfanmiral.com CLI — 3.3M+ roles crawled straight from 294K company career boards. Ships task-shaped agent skills and the /job-search, /market-fit, /tailor-cv, /track-applications and /triage-inbox commands.",
   "author": {
-    "name": "strelov1",
-    "url": "https://github.com/strelov1"
+    "name": "Irfan Miral",
+    "url": "https://rolewatch.irfanmiral.com"
   },
-  "homepage": "https://freehire.me/cli",
-  "repository": "https://github.com/strelov1/freehire-cli",
+  "homepage": "https://rolewatch.irfanmiral.com/cli",
+  "repository": "https://github.com/irfanMiral/rolewatch-cli",
   "license": "MIT",
-  "keywords": ["jobs", "ats", "cli", "freehire", "job-search"]
+  "keywords": ["jobs", "ats", "cli", "rolewatch", "job-search"]
 }

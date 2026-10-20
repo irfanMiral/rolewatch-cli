@@ -12,7 +12,7 @@ import (
 func TestInboxListSendsTheLinkFilter(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	for _, state := range []string{"linked", "suggested", "unlinked"} {
 		if _, err := run(t, "inbox", "list", "--link", state, "--api-url", api.URL); err != nil {
@@ -30,7 +30,7 @@ func TestInboxListSendsTheLinkFilter(t *testing.T) {
 func TestInboxListRejectsAnUnknownLinkState(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "inbox", "list", "--link", "bogus", "--api-url", api.URL)
 	if err == nil {
@@ -47,7 +47,7 @@ func TestInboxListRejectsAnUnknownLinkState(t *testing.T) {
 func TestInboxReadAllSendsTheLinkFilter(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	if _, err := run(t, "inbox", "read-all", "--link", "suggested", "--api-url", api.URL); err != nil {
 		t.Fatalf("inbox read-all: %v", err)
@@ -62,7 +62,7 @@ func TestInboxReadAllSendsTheLinkFilter(t *testing.T) {
 func TestInboxConfirmAndReject(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	for _, action := range []string{"confirm", "reject"} {
 		if _, err := run(t, "inbox", action, "7", "--api-url", api.URL); err != nil {
@@ -80,7 +80,7 @@ func TestInboxConfirmAndReject(t *testing.T) {
 func TestInboxApplicationSendsTheSlug(t *testing.T) {
 	api := newInboxAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "inbox", "application", "7", "go-dev-acme", "--api-url", api.URL)
 	if err != nil {

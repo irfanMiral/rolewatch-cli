@@ -1,5 +1,5 @@
-// Package config resolves and persists the freehire CLI credentials: the API
-// token and base URL. The token is stored in ~/.freehire/creds.json (mode 0600)
+// Package config resolves and persists the rolewatch CLI credentials: the API
+// token and base URL. The token is stored in ~/.rolewatch/creds.json (mode 0600)
 // and may be overridden by environment variables.
 package config
 
@@ -12,20 +12,20 @@ import (
 
 const (
 	// DefaultAPIURL is the production API base when none is configured.
-	DefaultAPIURL = "https://freehire.me"
+	DefaultAPIURL = "https://rolewatch.irfanmiral.com"
 
 	// EnvToken / EnvAPIURL override the stored credentials.
-	EnvToken  = "FREEHIRE_TOKEN"
-	EnvAPIURL = "FREEHIRE_API_URL"
+	EnvToken  = "ROLEWATCH_TOKEN"
+	EnvAPIURL = "ROLEWATCH_API_URL"
 
-	dirName  = ".freehire"
+	dirName  = ".rolewatch"
 	fileName = "creds.json"
 )
 
 // ErrNoToken is returned by Resolve when no token is configured anywhere.
-var ErrNoToken = errors.New("not authenticated: run `freehire auth login`")
+var ErrNoToken = errors.New("not authenticated: run `rolewatch auth login`")
 
-// Creds is the persisted credential file (~/.freehire/creds.json).
+// Creds is the persisted credential file (~/.rolewatch/creds.json).
 type Creds struct {
 	Token  string `json:"token"`
 	APIURL string `json:"api_url"`
@@ -37,7 +37,7 @@ type Resolved struct {
 	APIURL string
 }
 
-// Path returns the credentials file path (~/.freehire/creds.json).
+// Path returns the credentials file path (~/.rolewatch/creds.json).
 func Path() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {

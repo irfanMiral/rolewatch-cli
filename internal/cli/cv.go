@@ -68,7 +68,7 @@ func newCVListCmd() *cobra.Command {
 			out := cmd.OutOrStdout()
 			if len(items) == 0 {
 				fmt.Fprintln(out, "No tailored CVs yet.")
-				fmt.Fprintln(out, "Start one with: freehire cv tailor <job-slug>")
+				fmt.Fprintln(out, "Start one with: rolewatch cv tailor <job-slug>")
 				return nil
 			}
 			for _, it := range items {
@@ -120,7 +120,7 @@ func newCVTailorCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			slug := strings.TrimSpace(args[0])
 			if slug == "" {
-				return fmt.Errorf("a job slug is required, e.g. `freehire cv tailor go-developer-acme-1a2b3c4d`")
+				return fmt.Errorf("a job slug is required, e.g. `rolewatch cv tailor go-developer-acme-1a2b3c4d`")
 			}
 			c, _, err := authedClient(cmd)
 			if err != nil {
@@ -146,7 +146,7 @@ func newCVTailorCmd() *cobra.Command {
 			fmt.Fprintf(out, "%s tailoring for %s\n", verb, slug)
 			fmt.Fprintf(out, "  tailored CV: %s\n", r.TailorCVID)
 			fmt.Fprintf(out, "  base CV:     %s\n", r.BaseCVID)
-			fmt.Fprintf(out, "\nNext: freehire cv context %s\n", r.TailorCVID)
+			fmt.Fprintf(out, "\nNext: rolewatch cv context %s\n", r.TailorCVID)
 			return nil
 		},
 	}
@@ -212,8 +212,8 @@ func newCVEditCmd() *cobra.Command {
 			"document — `summary`, `experience[2].bullets[1]`, `skills[0].items[3]`, " +
 			"`education[1].degree`, `style.font_size`. Indices are 0-based.\n\n" +
 			"One edit fits on the command line:\n" +
-			"  freehire cv edit <cv-id> --set 'experience[0].bullets[1]=Cut p99 latency 40%'\n" +
-			"  freehire cv edit <cv-id> --remove 'experience[0].bullets[2]'\n\n" +
+			"  rolewatch cv edit <cv-id> --set 'experience[0].bullets[1]=Cut p99 latency 40%'\n" +
+			"  rolewatch cv edit <cv-id> --remove 'experience[0].bullets[2]'\n\n" +
 			"Several go in as JSON, via --ops or on stdin:\n" +
 			`  --ops '[{"kind":"set","path":"summary","value":"…"}]'` + "\n\n" +
 			"The whole batch applies or none of it does: an unknown path or an index past the " +
@@ -302,7 +302,7 @@ func newCVRenderCmd() *cobra.Command {
 func cvID(arg string) (string, error) {
 	id := strings.TrimSpace(arg)
 	if id == "" {
-		return "", fmt.Errorf("a cv id is required — copy it from `freehire cv list`, or start one with `freehire cv tailor <job-slug>`")
+		return "", fmt.Errorf("a cv id is required — copy it from `rolewatch cv list`, or start one with `rolewatch cv tailor <job-slug>`")
 	}
 	return id, nil
 }

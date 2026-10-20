@@ -1,38 +1,40 @@
-# freehire CLI
+# RoleWatch CLI
 
-A small Go CLI over the [freehire](https://freehire.me) job API — built so an
+A small Go CLI over the [rolewatch](https://rolewatch.irfanmiral.com) job API — built so an
 **agent** (or a human) can search, open, and apply to jobs from the terminal,
 without a browser. Authenticate once with a personal API key; the key is stored
-in `~/.freehire/creds.json`.
+in `~/.rolewatch/creds.json`.
+
+> A fork of [strelov1/freehire-cli](https://github.com/strelov1/freehire-cli) (MIT), adapted for the self-hosted RoleWatch platform. Original copyright is kept in `LICENSE`.
 
 ## Install
 
 **curl** (prebuilt binary, no Go needed):
 
 ```bash
-curl -fsSL https://freehire.me/install.sh | sh
+curl -fsSL https://rolewatch.irfanmiral.com/install.sh | sh
 ```
 
 **Go:**
 
 ```bash
-go install github.com/strelov1/freehire-cli/cmd/freehire@latest   # installs the `freehire` binary
+curl -fsSL https://rolewatch.irfanmiral.com/install.sh | sh   # installs the `rolewatch` binary
 ```
 
 ## Authenticate
 
 ```bash
-freehire auth login --oauth                # opens a browser to sign in — no key to paste or manage
-freehire auth login --token fhk_xxxxxxxx   # or: an API key from the web app (account menu → API keys)
-freehire auth status                       # Authenticated as you@example.com @ https://freehire.me
-freehire auth logout                       # removes ~/.freehire/creds.json
+rolewatch auth login --oauth                # opens a browser to sign in — no key to paste or manage
+rolewatch auth login --token fhk_xxxxxxxx   # or: an API key from the web app (account menu → API keys)
+rolewatch auth status                       # Authenticated as you@example.com @ https://rolewatch.irfanmiral.com
+rolewatch auth logout                       # removes ~/.rolewatch/creds.json
 ```
 
-`--oauth` registers this CLI with freehire's OAuth 2.1 authorization server
-(freehire#3114), opens your browser to approve the connection, and stores the
+`--oauth` registers this CLI with rolewatch's OAuth 2.1 authorization server
+(rolewatch#3114), opens your browser to approve the connection, and stores the
 resulting token exactly like a pasted key — nothing else in this CLI, or in
-[freehire-mcp](https://github.com/strelov1/freehire-mcp) reading the same
-`~/.freehire/creds.json`, needs to know which method produced it. Revoke a
+[rolewatch-mcp](https://github.com/irfanMiral/rolewatch-mcp) reading the same
+`~/.rolewatch/creds.json`, needs to know which method produced it. Revoke a
 browser-granted connection any time from the web app's **Connected devices**
 list, without touching an API key.
 
@@ -43,48 +45,48 @@ stdin.
 ## Use
 
 ```bash
-freehire profile                                               # your saved roles, skills, geography and CV (no contacts)
-freehire experience list                                       # your whole experience bank (employments + achievements)
-freehire experience employments add --company Acme --role SWE  # record a new job or project
-freehire experience atoms add --claim "Cut latency 20s to 1s" --metric "20s->1s" --skill go  # record a new achievement
-freehire experience atoms update <id> --claim "Cut p99 20s to 900ms"  # fix one field; the rest is kept
-freehire experience employments update <id> --end "Dec 2025"   # same, for a place
-freehire experience atoms rm <id>                              # remove an achievement (asks first)
-freehire experience employments rm <id>                        # remove a place — it must be empty
-freehire cv tailor <slug>                                      # start (or reopen) tailoring for a vacancy — prints the CV id
-freehire cv list                                               # the tailored CVs you already have, with their vacancies
-freehire cv context <cv-id>                                    # the fit analysis to reframe toward (missing_have vs missing_gap)
-freehire cv edit <cv-id> --set 'summary=…'                     # edit by path; a claim needs --evidence <atom-id>
-freehire cv render <cv-id> --out cv.pdf                        # download the ATS PDF
-freehire auto-apply status <job-slug>                          # where an attempt already queued on the site stands
-freehire auto-apply tailor <queue-id>                          # (re)start writing the CV for a queued attempt
-freehire auto-apply review <queue-id> --approve                # queue it for unattended submission
-freehire auto-apply review <queue-id> --decline                # park it for good
-freehire facets                                                # list every filter's live values + counts (what to filter by)
-freehire search "golang"                                       # list matching jobs (title · company · location · slug)
-freehire search "backend" --remote --region eu --company acme  # facet filters (repeatable: --region, --company)
-freehire search "data" --country BR --employment-type full_time --facet source=greenhouse  # any facet via --facet key=value
-freehire market-fit --skills go,docker,react --category backend  # how much of the market your skills cover (+ gaps)
-freehire market-fit --skills go --country BR                    # one skill probes that skill's demand under the filter
-freehire job <slug>                                            # show a job's full content (incl. posting URL + company slug)
-freehire company <slug>                                        # show a company and its open jobs
-freehire apply <slug>                                          # mark a job applied for your account
-freehire apply <slug> --on 2026-07-27                          # ...on the day you actually sent it
-freehire save <slug>                                           # bookmark a job for later
-freehire unsave <slug>                                         # remove a bookmark
-freehire stage <slug> <stage>                                  # set application stage (applied→…→offer, or rejected/withdrawn)
-freehire note <slug> a quick reminder                          # attach a free-text note (trailing args; no quotes needed)
-freehire my --filter applied                                   # tracked jobs, showing stage + note (all|viewed|saved|applied)
-freehire contribute <url>                                      # hand freehire a job link (see below)
-freehire contributions                                         # boards you've contributed
-freehire ghost report <slug> --applied-on 2026-06-01           # you applied that day and were never answered
-freehire ghost retract <slug>                                  # withdraw that report
-freehire inbox push < mail.json                                # upload mail your own client fetched
-freehire inbox list --unclassified --body                      # mail still awaiting a verdict, with its text
-freehire inbox triage <id> rejection --slug <slug>             # record what a message is + link it
-freehire inbox list --link suggested                          # matcher proposals awaiting your word
-freehire inbox confirm <id>                                   # accept one of them
-freehire inbox application <id> <slug>                        # mail about an untracked application
+rolewatch profile                                               # your saved roles, skills, geography and CV (no contacts)
+rolewatch experience list                                       # your whole experience bank (employments + achievements)
+rolewatch experience employments add --company Acme --role SWE  # record a new job or project
+rolewatch experience atoms add --claim "Cut latency 20s to 1s" --metric "20s->1s" --skill go  # record a new achievement
+rolewatch experience atoms update <id> --claim "Cut p99 20s to 900ms"  # fix one field; the rest is kept
+rolewatch experience employments update <id> --end "Dec 2025"   # same, for a place
+rolewatch experience atoms rm <id>                              # remove an achievement (asks first)
+rolewatch experience employments rm <id>                        # remove a place — it must be empty
+rolewatch cv tailor <slug>                                      # start (or reopen) tailoring for a vacancy — prints the CV id
+rolewatch cv list                                               # the tailored CVs you already have, with their vacancies
+rolewatch cv context <cv-id>                                    # the fit analysis to reframe toward (missing_have vs missing_gap)
+rolewatch cv edit <cv-id> --set 'summary=…'                     # edit by path; a claim needs --evidence <atom-id>
+rolewatch cv render <cv-id> --out cv.pdf                        # download the ATS PDF
+rolewatch auto-apply status <job-slug>                          # where an attempt already queued on the site stands
+rolewatch auto-apply tailor <queue-id>                          # (re)start writing the CV for a queued attempt
+rolewatch auto-apply review <queue-id> --approve                # queue it for unattended submission
+rolewatch auto-apply review <queue-id> --decline                # park it for good
+rolewatch facets                                                # list every filter's live values + counts (what to filter by)
+rolewatch search "golang"                                       # list matching jobs (title · company · location · slug)
+rolewatch search "backend" --remote --region eu --company acme  # facet filters (repeatable: --region, --company)
+rolewatch search "data" --country BR --employment-type full_time --facet source=greenhouse  # any facet via --facet key=value
+rolewatch market-fit --skills go,docker,react --category backend  # how much of the market your skills cover (+ gaps)
+rolewatch market-fit --skills go --country BR                    # one skill probes that skill's demand under the filter
+rolewatch job <slug>                                            # show a job's full content (incl. posting URL + company slug)
+rolewatch company <slug>                                        # show a company and its open jobs
+rolewatch apply <slug>                                          # mark a job applied for your account
+rolewatch apply <slug> --on 2026-07-27                          # ...on the day you actually sent it
+rolewatch save <slug>                                           # bookmark a job for later
+rolewatch unsave <slug>                                         # remove a bookmark
+rolewatch stage <slug> <stage>                                  # set application stage (applied→…→offer, or rejected/withdrawn)
+rolewatch note <slug> a quick reminder                          # attach a free-text note (trailing args; no quotes needed)
+rolewatch my --filter applied                                   # tracked jobs, showing stage + note (all|viewed|saved|applied)
+rolewatch contribute <url>                                      # hand rolewatch a job link (see below)
+rolewatch contributions                                         # boards you've contributed
+rolewatch ghost report <slug> --applied-on 2026-06-01           # you applied that day and were never answered
+rolewatch ghost retract <slug>                                  # withdraw that report
+rolewatch inbox push < mail.json                                # upload mail your own client fetched
+rolewatch inbox list --unclassified --body                      # mail still awaiting a verdict, with its text
+rolewatch inbox triage <id> rejection --slug <slug>             # record what a message is + link it
+rolewatch inbox list --link suggested                          # matcher proposals awaiting your word
+rolewatch inbox confirm <id>                                   # accept one of them
+rolewatch inbox application <id> <slug>                        # mail about an untracked application
 ```
 
 **Experience bank.** `experience list` shows every achievement grouped under the
@@ -121,7 +123,7 @@ stating what you DID needs `--evidence <atom-id>` from the experience bank. The
 readiness score, the revision history and undo stay on the site — deliberately,
 so the agent cannot read or revert the measure of its own work.
 
-**Auto-apply.** Queuing a *new* attempt is cookie-only on freehire.me itself — a
+**Auto-apply.** Queuing a *new* attempt is cookie-only on rolewatch.irfanmiral.com itself — a
 real application can go out, and the browser is the only place you can watch it
 happen and undo it, so there is no `auto-apply run` here and there will not be
 one. Once an attempt is queued from the site, `auto-apply status <job-slug>`
@@ -132,10 +134,10 @@ shows where it stands (`tailoring` → `pending_review` → `approved`, or
 <queue-id> --approve`/`--decline` records your decision — once only, the server
 refuses a second call.
 
-**Discovering values.** `freehire facets [filters]` lists every filter's live
+**Discovering values.** `rolewatch facets [filters]` lists every filter's live
 values with a vacancy count each (and the `skills` vocabulary), so you pass real
 values to `search`/`market-fit` instead of guessing. Narrow it with any filter flag
-to see the values for that slice (e.g. `freehire facets --category backend`).
+to see the values for that slice (e.g. `rolewatch facets --category backend`).
 
 **Filters.** `search` and `market-fit` share the same market-filter flags:
 `--remote`, `--region`, `--country`, `--city`, `--company`, `--category`, `--role`,
@@ -155,9 +157,9 @@ to jobs listing the skill).
 Moderators can author postings (requires the `moderator` role; a regular key gets 403):
 
 ```bash
-freehire jobs add --url https://acme.example/jobs/1 --title "Senior Go Developer" --company Acme --remote
-freehire jobs add --url <url> --source workatastartup --title <t> --company <c> --description "<p>…HTML…</p>"
-freehire jobs edit <slug> --title "Staff Go Developer"         # partial: only the flags you pass change
+rolewatch jobs add --url https://acme.example/jobs/1 --title "Senior Go Developer" --company Acme --remote
+rolewatch jobs add --url <url> --source workatastartup --title <t> --company <c> --description "<p>…HTML…</p>"
+rolewatch jobs edit <slug> --title "Staff Go Developer"         # partial: only the flags you pass change
 ```
 
 `--source` records the posting's real origin (defaults to `manual`); it does not change that
@@ -167,7 +169,7 @@ with the same URL updates the posting.
 
 ## Contributing a link
 
-`freehire contribute <url>` hands over any vacancy or ATS board link. One sequence answers,
+`rolewatch contribute <url>` hands over any vacancy or ATS board link. One sequence answers,
 whichever surface you use:
 
 | Outcome | Meaning |
@@ -182,14 +184,14 @@ board earns it — later links to the same company are still recorded (they tell
 matters) but pay nothing.
 
 ```bash
-freehire contribute https://acme.recruitee.com/o/senior-go
-freehire --json contribute https://acme.recruitee.com/o/senior-go | jq '.status, .public_slug'
-freehire contributions
+rolewatch contribute https://acme.recruitee.com/o/senior-go
+rolewatch --json contribute https://acme.recruitee.com/o/senior-go | jq '.status, .public_slug'
+rolewatch contributions
 ```
 
 ## A posting that may not be real
 
-`freehire job <slug>` shows a signal above the description when a posting looks like it is
+`rolewatch job <slug>` shows a signal above the description when a posting looks like it is
 not being worked — how it behaves, whether the employer's own careers board carries it, and
 what happened to people who applied:
 
@@ -208,8 +210,8 @@ If you applied and were never answered, say so — human evidence is the only th
 raise the signal past what a posting's shape can show:
 
 ```bash
-freehire ghost report senior-go-acme --applied-on 2026-06-01
-freehire ghost retract senior-go-acme
+rolewatch ghost report senior-go-acme --applied-on 2026-06-01
+rolewatch ghost retract senior-go-acme
 ```
 
 The date is the day *you* applied, and it is required. Reporting needs a verified email
@@ -217,20 +219,20 @@ address, works once per posting, and reaches no moderator — nothing here close
 
 ## Application mail — bring your own client
 
-freehire does not fetch your mail. Your own client does — [himalaya], `mbsync`,
+rolewatch does not fetch your mail. Your own client does — [himalaya], `mbsync`,
 `notmuch`, anything that can emit JSON — and `inbox push` hands the result over.
 Your agent then reads it and records what each message is, so the tracker stays
-current without freehire running a mail connector or a classifier for you.
+current without rolewatch running a mail connector or a classifier for you.
 
 [himalaya]: https://github.com/pimalaya/himalaya
 
 ```bash
 himalaya envelope list --output json | jq '[.[] | {
     external_id: .message_id, from_addr: .from.addr, from_name: .from.name,
-    subject: .subject, received_at: .date }]' | freehire inbox push
+    subject: .subject, received_at: .date }]' | rolewatch inbox push
 
-freehire --json inbox list --unclassified --body --limit 50   # what still needs judging, with its text
-freehire inbox triage 812 rejection --slug go-dev-acme-t35nijto
+rolewatch --json inbox list --unclassified --body --limit 50   # what still needs judging, with its text
+rolewatch inbox triage 812 rejection --slug go-dev-acme-t35nijto
 ```
 
 `external_id` is the deduplication key — use the message's `Message-ID`. Re-pushing
@@ -263,9 +265,9 @@ Corrections: `inbox link`/`unlink`, `inbox delete`/`restore`, `inbox read-all`.
 Pass `--json` for the raw API payload (faithful to the API; ideal for piping):
 
 ```bash
-freehire --json search "site reliability" --limit 5 | jq '.[].public_slug'
-freehire --json search "golang" --limit 3 | jq -r '.[].description'   # full postings, no extra call
-freehire --json job <slug> | jq '{title, url}'
+rolewatch --json search "site reliability" --limit 5 | jq '.[].public_slug'
+rolewatch --json search "golang" --limit 3 | jq -r '.[].description'   # full postings, no extra call
+rolewatch --json job <slug> | jq '{title, url}'
 ```
 
 `search` reads the API's agent endpoint, so every hit already carries the job's
@@ -275,7 +277,7 @@ location · slug); the descriptions are in the `--json` payload.
 
 Conventions: results go to **stdout**, errors to **stderr**, and a non-zero exit
 code signals failure (e.g. an unauthenticated call exits non-zero with
-`run \`freehire auth login\``).
+`run \`rolewatch auth login\``).
 
 ## Agent skills and slash commands
 
@@ -284,19 +286,19 @@ tool, so an agent loads what the question needs and not the whole surface:
 
 | Skill | Covers |
 |---|---|
-| [`using-freehire`](skills/using-freehire/SKILL.md) | install, auth, and the map of the rest |
-| [`freehire-job-search`](skills/freehire-job-search/SKILL.md) | profile → facets → search → job/company, contributing a link, reading the inactive-posting signal |
-| [`freehire-track-applications`](skills/freehire-track-applications/SKILL.md) | apply, save, stage, note, `my`, and reporting a posting that never answered |
-| [`freehire-market-fit`](skills/freehire-market-fit/SKILL.md) | scoring a stack against live vacancy demand |
-| [`freehire-tailor-cv`](skills/freehire-tailor-cv/SKILL.md) | reframing a CV toward one vacancy, and the evidence rule |
-| [`freehire-mail-triage`](skills/freehire-mail-triage/SKILL.md) | pushing, judging and linking application mail |
+| [`using-rolewatch`](skills/using-rolewatch/SKILL.md) | install, auth, and the map of the rest |
+| [`rolewatch-job-search`](skills/rolewatch-job-search/SKILL.md) | profile → facets → search → job/company, contributing a link, reading the inactive-posting signal |
+| [`rolewatch-track-applications`](skills/rolewatch-track-applications/SKILL.md) | apply, save, stage, note, `my`, and reporting a posting that never answered |
+| [`rolewatch-market-fit`](skills/rolewatch-market-fit/SKILL.md) | scoring a stack against live vacancy demand |
+| [`rolewatch-tailor-cv`](skills/rolewatch-tailor-cv/SKILL.md) | reframing a CV toward one vacancy, and the evidence rule |
+| [`rolewatch-mail-triage`](skills/rolewatch-mail-triage/SKILL.md) | pushing, judging and linking application mail |
 
 Drop them into a Claude Code (or compatible) skills directory, or install this repo as a
 **Claude Code plugin** to get the skills *and* the slash commands wired up automatically:
 
 ```
-/plugin marketplace add strelov1/freehire-cli
-/plugin install freehire@freehire-cli
+/plugin marketplace add https://github.com/irfanMiral/rolewatch-cli.git
+/plugin install rolewatch@rolewatch-cli
 ```
 
 The plugin adds [`commands/`](commands/): `/job-search`, `/market-fit`,
@@ -307,10 +309,10 @@ workflow end to end from one line.
 
 | What | Source (precedence: env → creds file → default) |
 |------|--------------------------------------------------|
-| Token | `FREEHIRE_TOKEN` → `~/.freehire/creds.json` |
-| API base URL | `FREEHIRE_API_URL` → creds file → `https://freehire.me` |
+| Token | `ROLEWATCH_TOKEN` → `~/.rolewatch/creds.json` |
+| API base URL | `ROLEWATCH_API_URL` → creds file → `https://rolewatch.irfanmiral.com` |
 
-The token can be supplied entirely via `FREEHIRE_TOKEN` (no stored file needed),
+The token can be supplied entirely via `ROLEWATCH_TOKEN` (no stored file needed),
 which suits CI and ephemeral agent sandboxes. `--api-url` overrides the base URL
 for a single invocation (e.g. pointing at a local dev server).
 
@@ -323,4 +325,4 @@ go build ./...
 
 ## License
 
-MIT — see [LICENSE](LICENSE). The freehire backend is MIT too.
+MIT — see [LICENSE](LICENSE). The rolewatch backend is MIT too.

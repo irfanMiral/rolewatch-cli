@@ -1,29 +1,29 @@
 #!/bin/sh
-# Install the freehire CLI: download the prebuilt binary for this OS/arch from the
-# latest GitHub release and place it on PATH.
-#   curl -fsSL https://freehire.me/install.sh | sh
-# (freehire.me serves this same script; the raw GitHub URL also works.)
+# Install the rolewatch CLI: download the prebuilt binary for this OS/arch from the
+# RoleWatch download server and place it on PATH.
+#   curl -fsSL https://rolewatch.irfanmiral.com/install.sh | sh
+# (rolewatch.irfanmiral.com serves this same script and the binaries under /dl/.)
 set -eu
 
-REPO="strelov1/freehire-cli"
-BIN="freehire"
-INSTALL_DIR="${FREEHIRE_INSTALL_DIR:-/usr/local/bin}"
+REPO="rolewatch-cli"
+BIN="rolewatch"
+INSTALL_DIR="${ROLEWATCH_INSTALL_DIR:-/usr/local/bin}"
 
 os=$(uname -s | tr '[:upper:]' '[:lower:]')
 case "$os" in
   linux | darwin) ;;
-  *) echo "freehire: unsupported OS '$os' (use 'go install $REPO/cmd/$BIN@latest')" >&2; exit 1 ;;
+  *) echo "rolewatch: unsupported OS '$os' (use 'go install $REPO/cmd/$BIN@latest')" >&2; exit 1 ;;
 esac
 
 arch=$(uname -m)
 case "$arch" in
   x86_64 | amd64) arch=amd64 ;;
   arm64 | aarch64) arch=arm64 ;;
-  *) echo "freehire: unsupported arch '$arch' (use 'go install $REPO/cmd/$BIN@latest')" >&2; exit 1 ;;
+  *) echo "rolewatch: unsupported arch '$arch' (use 'go install $REPO/cmd/$BIN@latest')" >&2; exit 1 ;;
 esac
 
 asset="${BIN}_${os}_${arch}"
-url="https://github.com/${REPO}/releases/latest/download/${asset}"
+url="https://rolewatch.irfanmiral.com/dl/${asset}"
 
 tmp=$(mktemp)
 trap 'rm -f "$tmp"' EXIT
@@ -41,4 +41,4 @@ fi
 trap - EXIT
 
 echo "Installed ${BIN} → ${target}"
-echo "Next: ${BIN} auth login --token fhk_…    (create a key at https://freehire.me → API keys)"
+echo "Next: ${BIN} auth login --token fhk_…    (create a key at https://rolewatch.irfanmiral.com → API keys)"

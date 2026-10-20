@@ -138,7 +138,7 @@ func newGhostCmd() *cobra.Command {
 		Use:   "ghost",
 		Short: "Report a posting that never answered your application",
 		Long: "The evidence channel behind the \"possibly inactive\" signal shown by " +
-			"`freehire job`. A report says you applied on a given day and were never " +
+			"`rolewatch job`. A report says you applied on a given day and were never " +
 			"answered; it reaches no moderator and closes nothing. It needs a verified " +
 			"email address, and you can file once per posting.",
 	}
@@ -153,7 +153,7 @@ func newGhostReportCmd() *cobra.Command {
 		Long: "File your claim about a posting: you applied on --applied-on and nobody " +
 			"ever came back. It is one of four checks behind the posting's signal, and " +
 			"it starts counting once the application has been silent for about three " +
-			"weeks. Withdraw it with `freehire ghost retract`.",
+			"weeks. Withdraw it with `rolewatch ghost retract`.",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			appliedOn, err := appliedOnFlag(cmd)

@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/strelov1/freehire-cli/internal/selfupdate"
+	"rolewatch-cli/internal/selfupdate"
 )
 
 // latestRelease and applyUpdate are package vars, not direct calls to
@@ -17,12 +17,12 @@ var (
 	applyUpdate   = selfupdate.Apply
 )
 
-// newUpdateCmd checks GitHub for a newer freehire release and, unless
+// newUpdateCmd checks GitHub for a newer rolewatch release and, unless
 // --check is set, downloads and installs it over the running binary.
 func newUpdateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
-		Short: "Update freehire to the latest release",
+		Short: "Update rolewatch to the latest release",
 		Long: "Checks the latest GitHub release and, unless --check is set, downloads " +
 			"and installs it in place of the running binary.",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -71,7 +71,7 @@ func newUpdateCmd() *cobra.Command {
 				fmt.Fprintf(cmd.OutOrStdout(), "Already up to date (%s).\n", current)
 			default: // available && checkOnly
 				fmt.Fprintf(cmd.OutOrStdout(),
-					"Update available: %s -> %s. Run `freehire update` to install.\n", current, rel.Tag)
+					"Update available: %s -> %s. Run `rolewatch update` to install.\n", current, rel.Tag)
 			}
 			return nil
 		},

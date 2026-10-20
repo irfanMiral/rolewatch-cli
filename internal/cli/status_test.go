@@ -14,7 +14,7 @@ func TestStatusShowsOperationalSummary(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "")
+	t.Setenv("ROLEWATCH_TOKEN", "")
 
 	out, err := run(t, "status", "--api-url", srv.URL)
 	if err != nil {
@@ -36,7 +36,7 @@ func TestStatusListsProblemProvidersAndExitsNonZero(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "")
+	t.Setenv("ROLEWATCH_TOKEN", "")
 
 	out, err := run(t, "status", "--api-url", srv.URL)
 	if err == nil {
@@ -59,7 +59,7 @@ func TestStatusJSONPassthrough(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "")
+	t.Setenv("ROLEWATCH_TOKEN", "")
 
 	out, err := run(t, "--json", "status", "--api-url", srv.URL)
 	if err != nil {
@@ -84,7 +84,7 @@ func TestStatusRunsAnonymously(t *testing.T) {
 	}))
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "")
+	t.Setenv("ROLEWATCH_TOKEN", "")
 
 	if _, err := run(t, "status", "--api-url", srv.URL); err != nil {
 		t.Fatalf("anonymous status should not error: %v", err)

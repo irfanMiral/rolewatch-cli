@@ -16,7 +16,7 @@ func TestSaveLoadRoundTrip(t *testing.T) {
 		t.Fatalf("Save: %v", err)
 	}
 
-	info, err := os.Stat(filepath.Join(home, ".freehire", "creds.json"))
+	info, err := os.Stat(filepath.Join(home, ".rolewatch", "creds.json"))
 	if err != nil {
 		t.Fatalf("stat creds: %v", err)
 	}

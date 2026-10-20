@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/strelov1/freehire-cli/internal/client"
+	"rolewatch-cli/internal/client"
 )
 
 // newJobsCmd is the `jobs` command group for moderator-authored postings. These

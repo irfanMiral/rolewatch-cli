@@ -14,7 +14,7 @@ func newProfileCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "profile",
 		Short: "Show your saved job-search profile",
-		Long: "Print the profile you saved on freehire: the roles and skills you want, the " +
+		Long: "Print the profile you saved on rolewatch: the roles and skills you want, the " +
 			"skills you want to avoid, where and how you will work, and your CV's headline and " +
 			"experience. Read this before guessing what to search for — the values are the same " +
 			"ones the site's own recommendations use. Contact details are not included.",
@@ -84,7 +84,7 @@ func printProfile(cmd *cobra.Command, v profileView, empty bool) {
 	out := cmd.OutOrStdout()
 	if empty {
 		fmt.Fprintln(out, "No profile saved yet.")
-		fmt.Fprintln(out, "Create one at https://freehire.me/my/profile — it also drives your")
+		fmt.Fprintln(out, "Create one at https://rolewatch.irfanmiral.com/my/profile — it also drives your")
 		fmt.Fprintln(out, "recommendations, saved-search alerts and the fit analysis on every vacancy.")
 		return
 	}

@@ -22,7 +22,7 @@ func TestContributeSendsTheLinkAndTagsTheSurface(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "contribute", "https://acme.recruitee.com/o/senior-go", "--api-url", srv.URL)
 	if err != nil {
@@ -72,13 +72,13 @@ func TestContributeMessagePerOutcome(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			got := contributeMessage(c.in, "https://freehire.me")
+			got := contributeMessage(c.in, "https://rolewatch.irfanmiral.com")
 			for _, want := range c.wantContain {
 				if !strings.Contains(got, want) {
 					t.Errorf("message = %q, want it to mention %q", got, want)
 				}
 			}
-			if c.in.PublicSlug == nil && strings.Contains(got, "https://freehire.me") {
+			if c.in.PublicSlug == nil && strings.Contains(got, "https://rolewatch.irfanmiral.com") {
 				t.Errorf("message = %q, want no link when there is no posting", got)
 			}
 		})
@@ -99,7 +99,7 @@ func TestContributionsListsMine(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "contributions", "--api-url", srv.URL)
 	if err != nil {
@@ -122,7 +122,7 @@ func TestContributionsJSONPassesThrough(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "contributions", "--json", "--api-url", srv.URL)
 	if err != nil {

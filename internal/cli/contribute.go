@@ -16,7 +16,7 @@ type resolvedLink struct {
 	CompanySlug string  `json:"company_slug"`
 }
 
-// contributionRow is one recorded contribution as `freehire contributions` prints it. Source
+// contributionRow is one recorded contribution as `rolewatch contributions` prints it. Source
 // and board are empty on a review row — a link we could not derive a board from, awaiting a
 // maintainer's judgement.
 type contributionRow struct {
@@ -28,19 +28,19 @@ type contributionRow struct {
 	CreatedAt string `json:"created_at"`
 }
 
-// newContributeCmd is the `contribute` command: hand freehire a job link. It replaced
+// newContributeCmd is the `contribute` command: hand rolewatch a job link. It replaced
 // `submit`, which wrote to the moderation queue for hand-authored job cards — a different
 // feature that happened to share a verb, and one no agent should be reaching for when what it
 // means is "here is a vacancy you don't have".
 func newContributeCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "contribute <url>",
-		Short: "Hand freehire a job link",
-		Long: "Give freehire a link to a vacancy or an ATS board. If we already carry the " +
+		Short: "Hand rolewatch a job link",
+		Long: "Give rolewatch a link to a vacancy or an ATS board. If we already carry the " +
 			"posting you get its slug back; if we can read the page, it is imported and you get " +
 			"the new posting; and if the company's board is one we don't crawl yet, it is " +
 			"queued for onboarding and you earn an AI credit. Track what you've sent with " +
-			"`freehire contributions`.",
+			"`rolewatch contributions`.",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, base, err := authedClient(cmd)

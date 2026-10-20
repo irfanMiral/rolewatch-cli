@@ -30,8 +30,8 @@ func TestRegisterClient(t *testing.T) {
 	if clientID != "fhcl_test123" {
 		t.Errorf("clientID = %q, want fhcl_test123", clientID)
 	}
-	if gotBody["client_name"] != "freehire CLI" {
-		t.Errorf("client_name = %v, want \"freehire CLI\"", gotBody["client_name"])
+	if gotBody["client_name"] != "rolewatch CLI" {
+		t.Errorf("client_name = %v, want \"rolewatch CLI\"", gotBody["client_name"])
 	}
 	redirectURIs, _ := gotBody["redirect_uris"].([]any)
 	if len(redirectURIs) != 1 || redirectURIs[0] != "http://127.0.0.1:54321/callback" {

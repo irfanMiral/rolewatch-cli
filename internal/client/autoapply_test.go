@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-// autoApplyFakeAPI mimics the freehire auto-apply review endpoints behind a Bearer=good
+// autoApplyFakeAPI mimics the rolewatch auto-apply review endpoints behind a Bearer=good
 // gate.
 func autoApplyFakeAPI(t *testing.T) *httptest.Server {
 	t.Helper()

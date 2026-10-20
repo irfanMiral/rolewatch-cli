@@ -12,7 +12,7 @@ func newCompanyCmd() *cobra.Command {
 		Use:   "company <slug>",
 		Short: "Show a company and its open jobs",
 		Long: "Show a company and the jobs it currently has open. Use the company " +
-			"slug shown by `freehire job <slug>` (or `--company <slug>` on search).",
+			"slug shown by `rolewatch job <slug>` (or `--company <slug>` on search).",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, _, err := publicClient(cmd)

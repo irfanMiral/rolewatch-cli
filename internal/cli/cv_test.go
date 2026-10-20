@@ -58,8 +58,8 @@ func cvFakeAPI(t *testing.T) *httptest.Server {
 // cvEnv points the CLI at the fake server as the authenticated user.
 func cvEnv(t *testing.T, srv *httptest.Server) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
-	t.Setenv("FREEHIRE_API_URL", srv.URL)
+	t.Setenv("ROLEWATCH_TOKEN", "good")
+	t.Setenv("ROLEWATCH_API_URL", srv.URL)
 }
 
 // testCV is an id the API would hand out: opaque, and nothing the CLI parses.

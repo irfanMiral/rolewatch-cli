@@ -1,39 +1,39 @@
 ---
-name: freehire-job-search
-description: Use when finding jobs for someone — searching or filtering the freehire catalogue by keyword, region, seniority, skills, salary or company; reading a posting or a company's open roles; discovering what values a filter accepts; reading the saved job-search profile before asking someone what they want; handing over a job link freehire does not carry yet; or reading the "possibly inactive" signal on a posting. Covers profile, facets, search, job, company and contribute, all with machine-readable `--json` output.
+name: rolewatch-job-search
+description: Use when finding jobs for someone — searching or filtering the rolewatch catalogue by keyword, region, seniority, skills, salary or company; reading a posting or a company's open roles; discovering what values a filter accepts; reading the saved job-search profile before asking someone what they want; handing over a job link rolewatch does not carry yet; or reading the "possibly inactive" signal on a posting. Covers profile, facets, search, job, company and contribute, all with machine-readable `--json` output.
 ---
 
-# Finding jobs on freehire
+# Finding jobs on rolewatch
 
-`freehire` is a single static binary over the [freehire.me](https://freehire.me)
+`rolewatch` is a single static binary over the [rolewatch.irfanmiral.com](https://rolewatch.irfanmiral.com)
 job API. It searches, filters and opens jobs without a browser. Every command
 supports `--json` for a raw, faithful API payload (pipe to `jq`).
 
-Needs a key: `freehire auth login --token fhk_…` (or `FREEHIRE_TOKEN`). A 401
-means "run `freehire auth login`".
+Needs a key: `rolewatch auth login --token fhk_…` (or `ROLEWATCH_TOKEN`). A 401
+means "run `rolewatch auth login`".
 
 ## The loop
 
 **0. Read the person's own profile before asking them anything.**
 
 ```bash
-freehire profile                      # roles, skills, skills to avoid, geography, CV
-freehire --json profile | jq '.skills, .cv.total_years'
+rolewatch profile                      # roles, skills, skills to avoid, geography, CV
+rolewatch --json profile | jq '.skills, .cv.total_years'
 ```
 
-They have already told freehire which roles and skills they want, which they
+They have already told rolewatch which roles and skills they want, which they
 would rather avoid, and where and how they will work. Start from that and say what
 you searched on; ask only about what it does not answer. It returns `null` data when
-they have saved none — then point them at `https://freehire.me/my/profile` rather
+they have saved none — then point them at `https://rolewatch.irfanmiral.com/my/profile` rather
 than collecting the same answers in the conversation, because what they save there
 also drives their recommendations and alerts. Contact details are never included.
 
 **1. Discover what you can filter by — before guessing values.**
 
 ```bash
-freehire facets                       # every filter's live values + counts, and skills
-freehire facets --category backend    # values relevant to a slice (e.g. backend skills)
-freehire --json facets | jq '.facets.skills'   # canonical skill slugs with demand
+rolewatch facets                       # every filter's live values + counts, and skills
+rolewatch facets --category backend    # values relevant to a slice (e.g. backend skills)
+rolewatch --json facets | jq '.facets.skills'   # canonical skill slugs with demand
 ```
 
 `facets` is the vocabulary source of truth: it returns each facet's valid values
@@ -45,10 +45,10 @@ lowercase slugs (`go`, `react`, `kubernetes`) — do not invent facet values.
 **2. Search with keyword + facet filters.**
 
 ```bash
-freehire search "golang" --remote --region eu --seniority senior
-freehire search "data" --country BR --employment-type full_time
-freehire search "AI" --country IT --employment-type contract --exclude-skill python
-freehire search "backend" --facet source=greenhouse   # any facet via --facet key=value
+rolewatch search "golang" --remote --region eu --seniority senior
+rolewatch search "data" --country BR --employment-type full_time
+rolewatch search "AI" --country IT --employment-type contract --exclude-skill python
+rolewatch search "backend" --facet source=greenhouse   # any facet via --facet key=value
 ```
 
 **Query syntax.** The keyword argument is more than a bag of words:
@@ -61,12 +61,12 @@ freehire search "backend" --facet source=greenhouse   # any facet via --facet ke
 | `title:"product owner"` | at the start of an alternative: match it in the title only, so a posting that merely mentions the role in its body is left out |
 
 ```bash
-freehire search 'title:"product owner" -junior OR title:produktchef'
-freehire search 'golang OR rust' --remote
+rolewatch search 'title:"product owner" -junior OR title:produktchef'
+rolewatch search 'golang OR rust' --remote
 ```
 
 - **Single-quote the whole query** whenever it has double quotes. The shell
-  strips unprotected quotes: `freehire search title:"product owner"` sends
+  strips unprotected quotes: `rolewatch search title:"product owner"` sends
   `title:product owner` and matched 59,406 postings instead of 6,028.
 - **Prefer one `OR` call to one call per synonym.** Paging, the total and the
   counts already describe the merged set.
@@ -115,23 +115,23 @@ single posting's other detail. Keep `--limit` small when you read descriptions.
 **3. Open what looks right.**
 
 ```bash
-freehire job <slug>                    # full content + posting URL + company slug
-freehire company <slug>                # a company and its open jobs
+rolewatch job <slug>                    # full content + posting URL + company slug
+rolewatch company <slug>                # a company and its open jobs
 ```
 
 To mark, stage and follow what they applied to, use the
-**freehire-track-applications** skill.
+**rolewatch-track-applications** skill.
 
-## A job freehire doesn't have
+## A job rolewatch doesn't have
 
 When the person is looking at a vacancy that is not in the catalogue — they pasted a link,
 or a search came up empty for a company you know is hiring — hand it over instead of
 apologising:
 
 ```bash
-freehire contribute https://acme.recruitee.com/o/senior-go
-freehire --json contribute <url> | jq '.status, .public_slug'
-freehire contributions                 # what you've handed over, and what became of it
+rolewatch contribute https://acme.recruitee.com/o/senior-go
+rolewatch --json contribute <url> | jq '.status, .public_slug'
+rolewatch contributions                 # what you've handed over, and what became of it
 ```
 
 One sequence answers, and `status` says which branch it took:
@@ -152,12 +152,12 @@ the vacancy: only the first person to name a company earns it, and later links t
 company are recorded but pay nothing. And `queued` does not mean rejected — it means we could
 not read that particular page.
 
-Do not use `freehire submissions` for this. That is the moderator review queue for
+Do not use `rolewatch submissions` for this. That is the moderator review queue for
 hand-authored job cards, a different feature; the `submit` command that fed it is gone.
 
 ## A posting that may not be real
 
-`freehire job <slug>` prints a signal block above the description when a posting looks
+`rolewatch job <slug>` prints a signal block above the description when a posting looks
 like it is not being worked. It is computed fresh on every read, and most postings
 carry nothing at all:
 
@@ -183,9 +183,9 @@ reply, never a reason to tell someone a job is fake. Two checks out of four is a
 lead, not a verdict.
 
 Filing a report — when the person applied and was never answered — belongs to the
-**freehire-track-applications** skill.
+**rolewatch-track-applications** skill.
 
 ## Presenting results
 
-Link each job you recommend as `https://freehire.me/jobs/<public_slug>`, one per
+Link each job you recommend as `https://rolewatch.irfanmiral.com/jobs/<public_slug>`, one per
 line, so a chat client unfurls it into a card.

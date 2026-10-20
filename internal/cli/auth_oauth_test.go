@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/strelov1/freehire-cli/internal/config"
+	"rolewatch-cli/internal/config"
 )
 
-// fakeOAuthAPI mimics the freehire backend's OAuth + /auth/me surface: dynamic
+// fakeOAuthAPI mimics the rolewatch backend's OAuth + /auth/me surface: dynamic
 // registration, the PKCE token exchange (any code/verifier pair is accepted —
 // the CLI's own oauthlogin package already covers the real PKCE check), and the
 // identity read the login command validates with afterward.
@@ -40,8 +40,8 @@ func fakeOAuthAPI(t *testing.T) *httptest.Server {
 func TestAuthLoginOAuthValidatesAndWritesCreds(t *testing.T) {
 	srv := fakeOAuthAPI(t)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "")
-	t.Setenv("FREEHIRE_API_URL", "")
+	t.Setenv("ROLEWATCH_TOKEN", "")
+	t.Setenv("ROLEWATCH_API_URL", "")
 
 	// Stand in for a human: "visit" the authorize URL by driving the local
 	// callback directly, the same way a real browser does once the real

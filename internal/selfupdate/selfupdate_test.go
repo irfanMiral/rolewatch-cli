@@ -49,8 +49,8 @@ func withFakeGitHubAPI(t *testing.T, body string, status int) *httptest.Server {
 
 func TestLatestReleaseParsesTagAndAssets(t *testing.T) {
 	withFakeGitHubAPI(t, `{"tag_name":"v0.17.0","assets":[
-		{"name":"freehire_darwin_arm64","browser_download_url":"https://example.test/freehire_darwin_arm64"},
-		{"name":"freehire_linux_amd64","browser_download_url":"https://example.test/freehire_linux_amd64"}
+		{"name":"rolewatch_darwin_arm64","browser_download_url":"https://example.test/rolewatch_darwin_arm64"},
+		{"name":"rolewatch_linux_amd64","browser_download_url":"https://example.test/rolewatch_linux_amd64"}
 	]}`, http.StatusOK)
 
 	rel, err := LatestRelease(context.Background())
@@ -60,8 +60,8 @@ func TestLatestReleaseParsesTagAndAssets(t *testing.T) {
 	if rel.Tag != "v0.17.0" {
 		t.Errorf("Tag = %q, want v0.17.0", rel.Tag)
 	}
-	if rel.Assets["freehire_darwin_arm64"] != "https://example.test/freehire_darwin_arm64" {
-		t.Errorf("asset URL = %q", rel.Assets["freehire_darwin_arm64"])
+	if rel.Assets["rolewatch_darwin_arm64"] != "https://example.test/rolewatch_darwin_arm64" {
+		t.Errorf("asset URL = %q", rel.Assets["rolewatch_darwin_arm64"])
 	}
 }
 
@@ -74,7 +74,7 @@ func TestLatestReleaseSurfacesNon200(t *testing.T) {
 }
 
 func TestAssetNameMatchesRuntime(t *testing.T) {
-	want := fmt.Sprintf("freehire_%s_%s", runtime.GOOS, runtime.GOARCH)
+	want := fmt.Sprintf("rolewatch_%s_%s", runtime.GOOS, runtime.GOARCH)
 	if got := AssetName(); got != want {
 		t.Errorf("AssetName() = %q, want %q", got, want)
 	}
@@ -87,7 +87,7 @@ func TestApplyReplacesTheBinary(t *testing.T) {
 	t.Cleanup(srv.Close)
 
 	dir := t.TempDir()
-	execPath := filepath.Join(dir, "freehire")
+	execPath := filepath.Join(dir, "rolewatch")
 	if err := os.WriteFile(execPath, []byte("old binary contents"), 0o755); err != nil {
 		t.Fatalf("seed exec: %v", err)
 	}
@@ -122,7 +122,7 @@ func TestApplySurfacesPermissionErrorWithHint(t *testing.T) {
 	t.Cleanup(srv.Close)
 
 	dir := t.TempDir()
-	execPath := filepath.Join(dir, "freehire")
+	execPath := filepath.Join(dir, "rolewatch")
 	if err := os.WriteFile(execPath, []byte("old binary contents"), 0o755); err != nil {
 		t.Fatalf("seed exec: %v", err)
 	}

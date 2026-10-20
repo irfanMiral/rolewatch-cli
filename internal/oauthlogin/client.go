@@ -12,7 +12,7 @@ import (
 
 // clientName is this CLI's display name on the consent screen and in a
 // user's "Connected devices" list.
-const clientName = "freehire CLI"
+const clientName = "rolewatch CLI"
 
 // registerClient performs RFC 7591 dynamic client registration against
 // baseURL, returning the server-assigned client_id. Called once per login —
@@ -83,7 +83,7 @@ func exchangeCode(ctx context.Context, hc *http.Client, baseURL, clientID, redir
 }
 
 // apiError renders a non-2xx response as a Go error, reading the `error`
-// field freehire's OAuth endpoints answer with when one is present.
+// field rolewatch's OAuth endpoints answer with when one is present.
 func apiError(resp *http.Response) error {
 	var body struct {
 		Error string `json:"error"`

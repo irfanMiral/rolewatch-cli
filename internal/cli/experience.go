@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/strelov1/freehire-cli/internal/client"
+	"rolewatch-cli/internal/client"
 )
 
 // newExperienceCmd is the `experience` command group. Reading, adding, correcting and
@@ -245,11 +245,11 @@ func newExperienceEmploymentsRmCmd() *cobra.Command {
 			}
 			cur, ok := bank.findEmployment(id)
 			if !ok {
-				return fmt.Errorf("no employment %s in your bank — check the id with `freehire experience list`", id)
+				return fmt.Errorf("no employment %s in your bank — check the id with `rolewatch experience list`", id)
 			}
 			if n := len(cur.Atoms); n > 0 {
 				return fmt.Errorf("%q still holds %d achievement(s), and removing it would delete them too.\n"+
-					"Move them first: freehire experience atoms update <atom-id> --employment <other-id>\n"+
+					"Move them first: rolewatch experience atoms update <atom-id> --employment <other-id>\n"+
 					"Or remove the place with its achievements from the experience page on the site.",
 					cur.label(), n)
 			}
@@ -285,7 +285,7 @@ func newExperienceEmploymentsUpdateCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := strings.TrimSpace(args[0])
 			if id == "" {
-				return fmt.Errorf("an employment id is required — take one from `freehire experience list`")
+				return fmt.Errorf("an employment id is required — take one from `rolewatch experience list`")
 			}
 			if !anyFlagChanged(cmd, employmentFlagNames...) {
 				return fmt.Errorf("name at least one field to change, e.g. --company or --end")
@@ -300,7 +300,7 @@ func newExperienceEmploymentsUpdateCmd() *cobra.Command {
 			}
 			cur, ok := bank.findEmployment(id)
 			if !ok {
-				return fmt.Errorf("no employment %s in your bank — check the id with `freehire experience list`", id)
+				return fmt.Errorf("no employment %s in your bank — check the id with `rolewatch experience list`", id)
 			}
 			current := cur.Current
 			if cmd.Flags().Changed("current") {
@@ -419,7 +419,7 @@ func newExperienceAtomsRmCmd() *cobra.Command {
 			}
 			cur, ok := bank.findAtom(id)
 			if !ok {
-				return fmt.Errorf("no achievement %s in your bank — check the id with `freehire experience list`", id)
+				return fmt.Errorf("no achievement %s in your bank — check the id with `rolewatch experience list`", id)
 			}
 			// Quote the claim back rather than the id: an id says nothing about what is
 			// about to be lost, and the whole purpose of asking is to make that visible.
@@ -459,7 +459,7 @@ func newExperienceAtomsUpdateCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := strings.TrimSpace(args[0])
 			if id == "" {
-				return fmt.Errorf("an achievement id is required — take one from `freehire experience list`")
+				return fmt.Errorf("an achievement id is required — take one from `rolewatch experience list`")
 			}
 			if !anyFlagChanged(cmd, atomFlagNames...) {
 				return fmt.Errorf("name at least one field to change, e.g. --claim or --metric")
@@ -474,7 +474,7 @@ func newExperienceAtomsUpdateCmd() *cobra.Command {
 			}
 			cur, ok := bank.findAtom(id)
 			if !ok {
-				return fmt.Errorf("no achievement %s in your bank — check the id with `freehire experience list`", id)
+				return fmt.Errorf("no achievement %s in your bank — check the id with `rolewatch experience list`", id)
 			}
 			data, err := c.UpdateAtom(cmd.Context(), id, client.CreateAtomParams{
 				Claim:        overlayString(cmd, "claim", cur.Claim),

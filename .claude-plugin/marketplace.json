@@ -1,15 +1,15 @@
 {
-  "name": "freehire-cli",
-  "description": "Job hunting from Claude Code, over freehire.me — 3.3M+ IT roles crawled straight from 294K company career boards.",
+  "name": "rolewatch-cli",
+  "description": "Job hunting from Claude Code, over rolewatch.irfanmiral.com — 3.3M+ IT roles crawled straight from 294K company career boards.",
   "owner": {
-    "name": "strelov1",
-    "url": "https://github.com/strelov1"
+    "name": "Irfan Miral",
+    "url": "https://rolewatch.irfanmiral.com"
   },
   "plugins": [
     {
-      "name": "freehire",
+      "name": "rolewatch",
       "source": "./",
-      "description": "Task-shaped agent skills over the freehire.me CLI — job search, application tracking, market fit, CV tailoring and mail triage — plus the /job-search, /market-fit, /tailor-cv, /track-applications and /triage-inbox commands. Machine-readable --json throughout."
+      "description": "Task-shaped agent skills over the rolewatch.irfanmiral.com CLI — job search, application tracking, market fit, CV tailoring and mail triage — plus the /job-search, /market-fit, /tailor-cv, /track-applications and /triage-inbox commands. Machine-readable --json throughout."
     }
   ]
 }

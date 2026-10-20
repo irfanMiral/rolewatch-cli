@@ -1,11 +1,11 @@
-// Package oauthlogin implements the client side of freehire's MCP OAuth 2.1
-// sign-in (freehire#3114): PKCE generation, dynamic client registration, the
+// Package oauthlogin implements the client side of rolewatch's MCP OAuth 2.1
+// sign-in (rolewatch#3114): PKCE generation, dynamic client registration, the
 // local loopback callback listener, and the authorization-code token exchange.
-// It lets `freehire auth login` obtain a bearer token by opening a browser
+// It lets `rolewatch auth login` obtain a bearer token by opening a browser
 // instead of requiring a pasted API key — the resulting token is stored the
 // same way (config.Creds.Token) and sent the same way (Authorization: Bearer),
-// so every other package in this CLI, and freehire-mcp reading the same
-// ~/.freehire/creds.json, needs no changes at all.
+// so every other package in this CLI, and rolewatch-mcp reading the same
+// ~/.rolewatch/creds.json, needs no changes at all.
 package oauthlogin
 
 import (
@@ -26,7 +26,7 @@ func generateVerifier() (string, error) {
 }
 
 // challengeFor computes the S256 code_challenge for a verifier — the only
-// method freehire's authorization server accepts.
+// method rolewatch's authorization server accepts.
 func challengeFor(verifier string) string {
 	sum := sha256.Sum256([]byte(verifier))
 	return base64.RawURLEncoding.EncodeToString(sum[:])

@@ -1,11 +1,11 @@
 ---
-name: freehire-tailor-cv
-description: Use when reframing someone's CV toward a specific vacancy through freehire — reading the fit analysis for a tailored copy, fetching or editing the CV document by path, rendering the ATS PDF, or deciding what may and may not be written into a CV. Carries the evidence rule: anything stating what the candidate DID needs an evidence atom they asserted themselves, and a genuine gap is asked about, never invented.
+name: rolewatch-tailor-cv
+description: Use when reframing someone's CV toward a specific vacancy through rolewatch — reading the fit analysis for a tailored copy, fetching or editing the CV document by path, rendering the ATS PDF, or deciding what may and may not be written into a CV. Carries the evidence rule: anything stating what the candidate DID needs an evidence atom they asserted themselves, and a genuine gap is asked about, never invented.
 ---
 
 # Tailoring a CV to a vacancy (beta)
 
-Needs a key: `freehire auth login --token fhk_…` (or `FREEHIRE_TOKEN`). These
+Needs a key: `rolewatch auth login --token fhk_…` (or `ROLEWATCH_TOKEN`). These
 commands act as the user whose key you signed in with, the same as every other
 command.
 
@@ -14,12 +14,12 @@ or reopen the one that exists — with the vacancy's slug, and the whole cycle r
 from here:
 
 ```bash
-freehire cv tailor <job-slug>         # create/reopen the copy; prints the CV id
-freehire cv list                      # the tailored CVs that already exist
-freehire cv context <id>              # the fit analysis to reframe toward (JSON)
-freehire cv get <id>                  # the current CV document (JSON)
-freehire cv edit <id> --set 'path=value'  # one edit; --ops '<json>' or stdin for several
-freehire cv render <id> --out cv.pdf  # download the ATS PDF to inspect
+rolewatch cv tailor <job-slug>         # create/reopen the copy; prints the CV id
+rolewatch cv list                      # the tailored CVs that already exist
+rolewatch cv context <id>              # the fit analysis to reframe toward (JSON)
+rolewatch cv get <id>                  # the current CV document (JSON)
+rolewatch cv edit <id> --set 'path=value'  # one edit; --ops '<json>' or stdin for several
+rolewatch cv render <id> --out cv.pdf  # download the ATS PDF to inspect
 ```
 
 `cv tailor` is idempotent per vacancy: running it twice for the same slug returns the
@@ -41,11 +41,11 @@ Paths reach everything: `summary`, `experience[2].bullets[1]`, `experience[0].st
 Indices are 0-based, counted over what `cv get` returned.
 
 ```bash
-freehire cv edit <id> --set 'summary=Senior backend engineer…'
-freehire cv edit <id> --set 'experience[0].bullets[1]=Cut p99 latency 40%' --evidence <atom-id>
-freehire cv edit <id> --insert 'experience[0].bullets[0]=Ran the migration' --evidence <atom-id>
-freehire cv edit <id> --remove 'skills[2]'
-freehire cv edit <id> --ops '[{"kind":"move","path":"experience[0].bullets[2]","to":0}]'
+rolewatch cv edit <id> --set 'summary=Senior backend engineer…'
+rolewatch cv edit <id> --set 'experience[0].bullets[1]=Cut p99 latency 40%' --evidence <atom-id>
+rolewatch cv edit <id> --insert 'experience[0].bullets[0]=Ran the migration' --evidence <atom-id>
+rolewatch cv edit <id> --remove 'skills[2]'
+rolewatch cv edit <id> --ops '[{"kind":"move","path":"experience[0].bullets[2]","to":0}]'
 ```
 
 Send edits that belong together in ONE call: they land as one entry in the candidate's
@@ -70,10 +70,10 @@ split the work:
   X? how did you use it?"). Only write it after they confirm real experience. On "no",
   leave it out; a gap belongs in the cover letter, never keyword-stuffed into the CV.
 - A confirmed new fact goes into the tailored CV, and you should offer to also add it to
-  the candidate's base CV (`freehire cv edit <base-id> …`) so future tailoring reuses it.
+  the candidate's base CV (`rolewatch cv edit <base-id> …`) so future tailoring reuses it.
 
 The server sanitizes and validates every patch; bad addressing is a 422. Re-render after
 meaningful edits and keep the CV to 1–2 pages.
 
 To measure a stack against the market rather than one vacancy, use the
-**freehire-market-fit** skill.
+**rolewatch-market-fit** skill.

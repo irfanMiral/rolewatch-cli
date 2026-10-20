@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/strelov1/freehire-cli/internal/selfupdate"
+	"rolewatch-cli/internal/selfupdate"
 )
 
 // withFakeUpdate swaps latestRelease/applyUpdate for fakes for the duration

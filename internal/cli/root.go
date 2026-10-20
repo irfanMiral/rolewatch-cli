@@ -1,4 +1,4 @@
-// Package cli implements the freehire command-line interface (cobra commands
+// Package cli implements the rolewatch command-line interface (cobra commands
 // over the internal API client and credential store).
 package cli
 
@@ -10,8 +10,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/strelov1/freehire-cli/internal/client"
-	"github.com/strelov1/freehire-cli/internal/config"
+	"rolewatch-cli/internal/client"
+	"rolewatch-cli/internal/config"
 )
 
 // Execute runs the CLI; it prints any error to stderr and exits non-zero. It is
@@ -25,10 +25,10 @@ func Execute() {
 
 func newRootCmd() *cobra.Command {
 	root := &cobra.Command{
-		Use:   "freehire",
-		Short: "Search and track jobs from the terminal via the freehire API",
-		Long: "freehire is a CLI over the freehire API. Authenticate once with " +
-			"`freehire auth login`, then search, open, and apply to jobs. Pass --json " +
+		Use:   "rolewatch",
+		Short: "Search and track jobs from the terminal via the rolewatch API",
+		Long: "rolewatch is a CLI over the rolewatch API. Authenticate once with " +
+			"`rolewatch auth login`, then search, open, and apply to jobs. Pass --json " +
 			"for machine-readable output (handy for agents).",
 		SilenceUsage:  true,
 		SilenceErrors: true,

@@ -15,8 +15,8 @@ func TestVersionFlagPrintsStampedVersion(t *testing.T) {
 	if err != nil {
 		t.Fatalf("--version: %v", err)
 	}
-	if !strings.Contains(out, "freehire version v9.9.9") {
-		t.Errorf("--version output = %q, want it to contain %q", out, "freehire version v9.9.9")
+	if !strings.Contains(out, "rolewatch version v9.9.9") {
+		t.Errorf("--version output = %q, want it to contain %q", out, "rolewatch version v9.9.9")
 	}
 }
 
@@ -30,7 +30,7 @@ func TestVersionShortFlagPrintsStampedVersion(t *testing.T) {
 	if err != nil {
 		t.Fatalf("-v: %v", err)
 	}
-	if !strings.Contains(out, "freehire version v9.9.9") {
-		t.Errorf("-v output = %q, want it to contain %q", out, "freehire version v9.9.9")
+	if !strings.Contains(out, "rolewatch version v9.9.9") {
+		t.Errorf("-v output = %q, want it to contain %q", out, "rolewatch version v9.9.9")
 	}
 }

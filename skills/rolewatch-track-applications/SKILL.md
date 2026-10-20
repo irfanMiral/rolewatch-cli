@@ -1,22 +1,22 @@
 ---
-name: freehire-track-applications
-description: Use when recording or reviewing what someone applied to on freehire — marking a job applied, bookmarking one for later, moving an application through its stages (applied through offer, or rejected/withdrawn), attaching a note, or listing what they are tracking. Also covers reporting a posting that never answered them after they applied (`ghost report`), and retracting that report.
+name: rolewatch-track-applications
+description: Use when recording or reviewing what someone applied to on rolewatch — marking a job applied, bookmarking one for later, moving an application through its stages (applied through offer, or rejected/withdrawn), attaching a note, or listing what they are tracking. Also covers reporting a posting that never answered them after they applied (`ghost report`), and retracting that report.
 ---
 
-# Tracking applications on freehire
+# Tracking applications on rolewatch
 
-Needs a key: `freehire auth login --token fhk_…` (or `FREEHIRE_TOKEN`). Every
+Needs a key: `rolewatch auth login --token fhk_…` (or `ROLEWATCH_TOKEN`). Every
 command takes `--json`. To *find* the jobs in the first place, use the
-**freehire-job-search** skill; every command here takes the same `<slug>`.
+**rolewatch-job-search** skill; every command here takes the same `<slug>`.
 
 ## Mark, stage, review
 
 ```bash
-freehire apply <slug>                    # mark applied
-freehire save <slug> / unsave <slug>     # bookmark
-freehire stage <slug> <stage>            # applied…offer, or rejected/withdrawn
-freehire note <slug> a quick reminder    # free-text note (trailing args; no quotes needed)
-freehire my --filter applied             # tracked jobs with stage + note (all|viewed|saved|applied)
+rolewatch apply <slug>                    # mark applied
+rolewatch save <slug> / unsave <slug>     # bookmark
+rolewatch stage <slug> <stage>            # applied…offer, or rejected/withdrawn
+rolewatch note <slug> a quick reminder    # free-text note (trailing args; no quotes needed)
+rolewatch my --filter applied             # tracked jobs with stage + note (all|viewed|saved|applied)
 ```
 
 `apply` and `save` are idempotent, so retries are safe. The API owns the stage
@@ -33,12 +33,12 @@ If the person applied and was never answered, file it — that is the only chann
 that gets human evidence into the "possibly inactive" signal other people read:
 
 ```bash
-freehire ghost report <slug> --applied-on 2026-06-01   # the day THEY applied
-freehire ghost retract <slug>                          # withdraw it
+rolewatch ghost report <slug> --applied-on 2026-06-01   # the day THEY applied
+rolewatch ghost retract <slug>                          # withdraw it
 ```
 
 `--applied-on` is required and never guessed: ask the person, or take it from
-`freehire my --filter applied`. The date is the substance of the claim — it decides
+`rolewatch my --filter applied`. The date is the substance of the claim — it decides
 when the silence has matured (roughly three weeks) — so a date they did not state is a
 claim they did not make.
 
@@ -49,5 +49,5 @@ four checks; the stronger wording needs a second person, which is also why a rep
 never displayed as coming from one identifiable applicant.
 
 Nothing here reaches a moderator and nothing here closes a job. Do not confuse it
-with `freehire contribute` (handing over a job link) or the moderator queue behind
-`freehire submissions`.
+with `rolewatch contribute` (handing over a job link) or the moderator queue behind
+`rolewatch submissions`.

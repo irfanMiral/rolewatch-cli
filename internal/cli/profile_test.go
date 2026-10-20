@@ -38,7 +38,7 @@ const savedProfileJSON = `{"data":{
 
 func TestProfileShowsTheSavedPreferences(t *testing.T) {
 	srv := profileAPI(t, savedProfileJSON)
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "--api-url", srv.URL, "profile")
 	if err != nil {
@@ -53,7 +53,7 @@ func TestProfileShowsTheSavedPreferences(t *testing.T) {
 
 func TestProfileJSONIsTheRawPayload(t *testing.T) {
 	srv := profileAPI(t, savedProfileJSON)
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "--json", "--api-url", srv.URL, "profile")
 	if err != nil {
@@ -68,7 +68,7 @@ func TestProfileJSONIsTheRawPayload(t *testing.T) {
 // and not an error — the same answer the in-app assistant gives.
 func TestProfileWithoutOneSaysWhereToMakeOne(t *testing.T) {
 	srv := profileAPI(t, `{"data":null}`)
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "--api-url", srv.URL, "profile")
 	if err != nil {

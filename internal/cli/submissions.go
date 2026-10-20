@@ -10,7 +10,7 @@ import (
 
 // The `submit` command is gone: it wrote to the moderation queue for hand-authored job cards,
 // which is a different feature from contributing a link, and the shared verb made agents reach
-// for the wrong one. Handing freehire a URL is `freehire contribute`. What remains here is the
+// for the wrong one. Handing rolewatch a URL is `rolewatch contribute`. What remains here is the
 // moderator's review queue.
 
 // submissionRow is the subset of a submission shown in CLI output. submitter_email is

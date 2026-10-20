@@ -32,7 +32,7 @@ func newGhostServer(t *testing.T, status int) *ghostServer {
 	g.Server = httptest.NewServer(mux)
 	t.Cleanup(g.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 	return g
 }
 
@@ -98,7 +98,7 @@ func TestJobShowsTheSignalAboveTheDescription(t *testing.T) {
 	srv := httptest.NewServer(mux)
 	t.Cleanup(srv.Close)
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
+	t.Setenv("ROLEWATCH_TOKEN", "good")
 
 	out, err := run(t, "job", "go-dev-acme", "--api-url", srv.URL)
 	if err != nil {

@@ -27,7 +27,7 @@ type statusProviderResult struct {
 func newStatusCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "status",
-		Short: "Check whether the freehire ingest pipeline is healthy",
+		Short: "Check whether the rolewatch ingest pipeline is healthy",
 		Long: "status reports the public ingest-fleet health: an overall " +
 			"operational/degraded/down verdict, when the pipeline last added a " +
 			"job, and which providers (if any) are not operational. Exits " +

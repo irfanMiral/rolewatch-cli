@@ -59,8 +59,8 @@ func autoApplyFakeAPI(t *testing.T) *httptest.Server {
 
 func autoApplyEnv(t *testing.T, srv *httptest.Server) {
 	t.Setenv("HOME", t.TempDir())
-	t.Setenv("FREEHIRE_TOKEN", "good")
-	t.Setenv("FREEHIRE_API_URL", srv.URL)
+	t.Setenv("ROLEWATCH_TOKEN", "good")
+	t.Setenv("ROLEWATCH_API_URL", srv.URL)
 }
 
 func TestAutoApplyStatus_pendingReview(t *testing.T) {

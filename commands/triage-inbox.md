@@ -1,21 +1,21 @@
 ---
-description: Sort application mail into the freehire tracker and drain the link queues
+description: Sort application mail into the rolewatch tracker and drain the link queues
 argument-hint: [optional: how many messages, or which mailbox]
-allowed-tools: Bash(freehire:*)
+allowed-tools: Bash(rolewatch:*)
 ---
 
 Triage application mail. Scope: **$ARGUMENTS**
 
-Follow the `freehire-mail-triage` skill. In short:
+Follow the `rolewatch-mail-triage` skill. In short:
 
 1. If the person has a mail client on this machine (himalaya, mbsync, notmuch,
    the Gmail API), fetch and push a batch — `external_id` is the message's
    `Message-ID`, and re-pushing an id updates rather than duplicates, so an
    overlapping window is safe. Batches cap at 100.
-2. `freehire --json inbox list --unclassified --body --limit 50`. Use
+2. `rolewatch --json inbox list --unclassified --body --limit 50`. Use
    `list --body`, never `read`, when sweeping — `read` marks messages read and
    would silently zero their unread count.
-3. Judge each message and record it with `freehire inbox triage <id> <signal>
+3. Judge each message and record it with `rolewatch inbox triage <id> <signal>
    --slug <slug>`.
 4. Drain both queues: `--link suggested` needs a `confirm` or `reject`; `--link
    unlinked` needs `inbox application <id> <slug>` where an application should

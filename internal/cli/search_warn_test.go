@@ -39,8 +39,8 @@ func TestSearch_WarnsOnIgnoredParamsInJSONMode(t *testing.T) {
 	// stderr: dropped on the floor, a widened result set looks like a real one;
 	// mixed into stdout, it breaks the JSON the agent parses.
 	srv := warnAPI(t)
-	t.Setenv("FREEHIRE_TOKEN", "good")
-	t.Setenv("FREEHIRE_API_URL", srv.URL)
+	t.Setenv("ROLEWATCH_TOKEN", "good")
+	t.Setenv("ROLEWATCH_API_URL", srv.URL)
 
 	stdout, stderr, err := runSplit(t, "search", "go", "--json", "--facet", "country=it")
 	if err != nil {
@@ -58,8 +58,8 @@ func TestSearch_WarnsOnIgnoredParamsInJSONMode(t *testing.T) {
 
 func TestSearch_QuietWhenNothingIgnored(t *testing.T) {
 	srv := fakeAPI(t)
-	t.Setenv("FREEHIRE_TOKEN", "good")
-	t.Setenv("FREEHIRE_API_URL", srv.URL)
+	t.Setenv("ROLEWATCH_TOKEN", "good")
+	t.Setenv("ROLEWATCH_API_URL", srv.URL)
 
 	_, stderr, err := runSplit(t, "search", "go", "--json")
 	if err != nil {

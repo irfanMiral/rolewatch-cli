@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-// experienceFakeAPI mimics the freehire experience-bank endpoints behind a Bearer=good gate.
+// experienceFakeAPI mimics the rolewatch experience-bank endpoints behind a Bearer=good gate.
 func experienceFakeAPI(t *testing.T) *httptest.Server {
 	t.Helper()
 	mux := http.NewServeMux()
