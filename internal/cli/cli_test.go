@@ -154,6 +154,33 @@ func TestSearchWithoutTokenRunsAnonymously(t *testing.T) {
 	}
 }
 
+func TestJobWithoutTokenRunsAnonymously(t *testing.T) {
+	// GET /jobs/:slug is public, like search: job must work with no token.
+	var hadAuth bool
+	mux := http.NewServeMux()
+	mux.HandleFunc("/api/v1/jobs/go-dev", func(w http.ResponseWriter, r *http.Request) {
+		_, hadAuth = r.Header["Authorization"]
+		w.Write([]byte(`{"data":{"public_slug":"go-dev","title":"Go Dev","company":"Acme","company_slug":"acme","location":"Remote","url":"https://acme.example/jobs/1","description":"Write Go."}}`))
+	})
+	srv := httptest.NewServer(mux)
+	t.Cleanup(srv.Close)
+
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv("ROLEWATCH_TOKEN", "")
+	t.Setenv("ROLEWATCH_API_URL", "")
+
+	out, err := run(t, "job", "go-dev", "--api-url", srv.URL)
+	if err != nil {
+		t.Fatalf("anonymous job should not error: %v", err)
+	}
+	if !strings.Contains(out, "Go Dev") || !strings.Contains(out, "Write Go.") {
+		t.Errorf("job output = %q", out)
+	}
+	if hadAuth {
+		t.Error("anonymous job must not send an Authorization header")
+	}
+}
+
 func TestSearchFiltersMapToFacets(t *testing.T) {
 	var got url.Values
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -504,5 +531,24 @@ func TestApplyOnADate(t *testing.T) {
 	}
 	if !strings.Contains(out, "Marked applied on 2026-07-27: go-dev") {
 		t.Errorf("output = %q, want it to name the day", out)
+	}
+}
+
+// A script that pipes its key keeps working now that a bare `auth login` at a
+// terminal opens the browser instead of prompting.
+func TestAuthLoginReadsAPipedKey(t *testing.T) {
+	srv := fakeAPI(t)
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv("ROLEWATCH_TOKEN", "")
+	t.Setenv("ROLEWATCH_API_URL", "")
+
+	if _, err := runIn(t, "good\n", "auth", "login", "--api-url", srv.URL); err != nil {
+		t.Fatalf("login: %v", err)
+	}
+	if got, _ := config.Load(); got.Token != "good" {
+		t.Errorf("stored creds = %+v, want the piped key", got)
+	}
+	if _, err := runIn(t, "", "auth", "login", "--api-url", srv.URL); err == nil {
+		t.Error("an empty pipe must fail rather than wait on a browser")
 	}
 }

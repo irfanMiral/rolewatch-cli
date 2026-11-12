@@ -27,7 +27,16 @@ The query understands four operators:
 Wrap the whole query in single quotes when it contains double quotes, or the
 shell strips them:
 
-  rolewatch search 'title:"product owner" -junior OR title:produktchef'`,
+  rolewatch search 'title:"product owner" -junior OR title:produktchef'
+
+--semantic also matches postings that describe the query in other words:
+
+  rolewatch search "help kids learn to read" --semantic
+
+Use it for a need described in words. Leave it off for a job title
+("react developer") or a non-technical role: meaning-based matching covers
+technical roles only, and there plain keywords answer better. When it cannot
+run, the results are keyword-only and a warning says so.`,
 		Args: cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, _, err := publicClient(cmd)
@@ -36,6 +45,7 @@ shell strips them:
 			}
 			limit, _ := cmd.Flags().GetInt("limit")
 			offset, _ := cmd.Flags().GetInt("offset")
+			semantic, _ := cmd.Flags().GetBool("semantic")
 
 			facets, err := facetsFromFlags(cmd)
 			if err != nil {
@@ -48,15 +58,19 @@ shell strips them:
 			}
 
 			res, err := c.Search(cmd.Context(), client.SearchParams{
-				Query:  strings.Join(args, " "),
-				Limit:  limit,
-				Offset: offset,
-				Facets: facets,
+				Query:    strings.Join(args, " "),
+				Limit:    limit,
+				Offset:   offset,
+				Facets:   facets,
+				Semantic: semantic,
 			})
 			if err != nil {
 				return err
 			}
-			warnIgnored(cmd, res.Ignored)
+			warnIgnored(cmd, res.Ignored, res.IgnoredValues)
+			if res.Semantic == "unavailable" {
+				fmt.Fprintln(cmd.ErrOrStderr(), "warning: semantic search unavailable — showing keyword matches only")
+			}
 			if wantJSON(cmd) {
 				printJSON(cmd, res.Data)
 				return nil
@@ -70,12 +84,21 @@ shell strips them:
 				fmt.Fprintf(out, "%-40s  %-20s  %-16s  %s\n",
 					trunc(r.Title, 40), trunc(r.Company, 20), trunc(r.Location, 16), r.PublicSlug)
 			}
-			fmt.Fprintf(out, "\n%d of %d shown\n", len(rows), res.Total)
+			// A semantic answer's total is only "at least", so it is not printed as a count.
+			switch {
+			case !res.TotalIsLowerBound:
+				fmt.Fprintf(out, "\n%d of %d shown\n", len(rows), res.Total)
+			case res.Total > offset+len(rows):
+				fmt.Fprintf(out, "\n%d shown, more available\n", len(rows))
+			default:
+				fmt.Fprintf(out, "\n%d shown\n", len(rows))
+			}
 			return nil
 		},
 	}
 	cmd.Flags().Int("limit", 20, "maximum results")
 	cmd.Flags().Int("offset", 0, "results offset for paging")
+	cmd.Flags().Bool("semantic", false, "also match postings that describe the query in other words (for a need described in words, not a job title)")
 	addFacetFlags(cmd)
 	cmd.Flags().StringArray("skills", nil, "filter by skill, e.g. go, react (repeatable)")
 	return cmd
@@ -87,7 +110,7 @@ func newJobCmd() *cobra.Command {
 		Short: "Show a job's content by its slug",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, _, err := authedClient(cmd)
+			c, _, err := publicClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -106,15 +129,62 @@ func newJobCmd() *cobra.Command {
 			out := cmd.OutOrStdout()
 			fmt.Fprintf(out, "%s\n%s (%s) · %s\n%s\n",
 				j.Title, j.Company, j.CompanySlug, j.Location, j.URL)
+			// A slug from an old shortlist still resolves after the posting closes, and
+			// nothing else on the page says so.
+			if j.ClosedAt != "" {
+				fmt.Fprintf(out, "\nCLOSED on %s — no longer accepting applications\n", calendarDay(j.ClosedAt))
+			}
 			// Above the description, not after it: a posting runs for screens, and a
 			// reader who should know this before applying would never reach the bottom.
 			if lines := j.Ghost.lines(); len(lines) > 0 {
 				fmt.Fprintf(out, "\n%s\n", strings.Join(lines, "\n"))
 			}
-			fmt.Fprintf(out, "\n%s\n", j.Description)
+			fmt.Fprintf(out, "\n%s\n", descriptionText(j.Description))
 			return nil
 		},
 	}
+}
+
+func newSimilarCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "similar <slug>",
+		Short: "List the postings most similar to one job, nearest first",
+		Long: `List the postings most similar to one job, nearest first.
+
+Empty for the newest postings, whose neighbours are not computed yet.`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, _, err := publicClient(cmd)
+			if err != nil {
+				return err
+			}
+			limit, _ := cmd.Flags().GetInt("limit")
+			data, err := c.Similar(cmd.Context(), args[0], limit)
+			if err != nil {
+				return err
+			}
+			if wantJSON(cmd) {
+				printJSON(cmd, data)
+				return nil
+			}
+			var rows []jobRow
+			if err := json.Unmarshal(data, &rows); err != nil {
+				return err
+			}
+			out := cmd.OutOrStdout()
+			if len(rows) == 0 {
+				fmt.Fprintln(out, "no similar postings yet — neighbours are computed a while after a posting appears")
+				return nil
+			}
+			for _, r := range rows {
+				fmt.Fprintf(out, "%-40s  %-20s  %-16s  %s\n",
+					trunc(r.Title, 40), trunc(r.Company, 20), trunc(r.Location, 16), r.PublicSlug)
+			}
+			return nil
+		},
+	}
+	cmd.Flags().Int("limit", 10, "maximum results")
+	return cmd
 }
 
 func newApplyCmd() *cobra.Command {

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
 
@@ -69,5 +70,37 @@ func TestAuthLoginOAuthValidatesAndWritesCreds(t *testing.T) {
 	got, _ := config.Load()
 	if got.Token != "fhm_test-access-token" || got.APIURL != srv.URL {
 		t.Errorf("stored creds = %+v", got)
+	}
+}
+
+func TestLoginMethodFor(t *testing.T) {
+	cases := []struct {
+		name                         string
+		oauth, hasToken, interactive bool
+		want                         loginMethod
+	}{
+		{"a person at a terminal signs in via the browser", false, false, true, loginViaBrowser},
+		{"--token wins over the terminal", false, true, true, loginViaToken},
+		{"a script with --token", false, true, false, loginViaToken},
+		{"a script piping the key", false, false, false, loginViaPipedKey},
+		{"--oauth still forces the browser", true, true, false, loginViaBrowser},
+	}
+	for _, tc := range cases {
+		if got := loginMethodFor(tc.oauth, tc.hasToken, tc.interactive); got != tc.want {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.want)
+		}
+	}
+}
+
+// /dev/null is a character device but not a terminal; treating it as one sent
+// a CI job run with </dev/null to wait on a browser.
+func TestIsTerminal_DevNullIsNotATerminal(t *testing.T) {
+	f, err := os.Open(os.DevNull)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = f.Close() }()
+	if isTerminal(f) {
+		t.Error("isTerminal(/dev/null) = true")
 	}
 }

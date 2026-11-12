@@ -2,8 +2,12 @@
 
 A small Go CLI over the [rolewatch](https://rolewatch.irfanmiral.com) job API — built so an
 **agent** (or a human) can search, open, and apply to jobs from the terminal,
-without a browser. Authenticate once with a personal API key; the key is stored
-in `~/.rolewatch/creds.json`.
+without a browser. Sign in once — `rolewatch auth login` opens your browser — and
+the token is stored in `~/.rolewatch/creds.json`.
+
+![Claude Code running rolewatch search and rolewatch job, then picking three senior remote Go backend roles in Europe](docs/assets/claude-code-demo.gif)
+
+*A real Claude Code session driving the CLI against the live catalogue, sped up 1.5×.*
 
 > A fork of [strelov1/freehire-cli](https://github.com/strelov1/freehire-cli) (MIT), adapted for the self-hosted RoleWatch platform. Original copyright is kept in `LICENSE`.
 
@@ -24,13 +28,13 @@ curl -fsSL https://rolewatch.irfanmiral.com/install.sh | sh   # installs the `ro
 ## Authenticate
 
 ```bash
-rolewatch auth login --oauth                # opens a browser to sign in — no key to paste or manage
+rolewatch auth login                        # opens a browser to sign in — no key to paste or manage
 rolewatch auth login --token fhk_xxxxxxxx   # or: an API key from the web app (account menu → API keys)
 rolewatch auth status                       # Authenticated as you@example.com @ https://rolewatch.irfanmiral.com
 rolewatch auth logout                       # removes ~/.rolewatch/creds.json
 ```
 
-`--oauth` registers this CLI with rolewatch's OAuth 2.1 authorization server
+Run in a terminal, `auth login` registers this CLI with RoleWatch's OAuth 2.1 authorization server
 (rolewatch#3114), opens your browser to approve the connection, and stores the
 resulting token exactly like a pasted key — nothing else in this CLI, or in
 [rolewatch-mcp](https://github.com/irfanMiral/rolewatch-mcp) reading the same
@@ -39,8 +43,8 @@ browser-granted connection any time from the web app's **Connected devices**
 list, without touching an API key.
 
 `auth login` validates the credential against the API before saving, so a bad
-key or a failed sign-in is never stored. Omit `--token` to be prompted on
-stdin.
+key or a failed sign-in is never stored. A script without a browser passes
+`--token`, or pipes the key on stdin (`echo "$KEY" | rolewatch auth login`).
 
 ## Use
 
@@ -66,9 +70,11 @@ rolewatch facets                                                # list every fil
 rolewatch search "golang"                                       # list matching jobs (title · company · location · slug)
 rolewatch search "backend" --remote --region eu --company acme  # facet filters (repeatable: --region, --company)
 rolewatch search "data" --country BR --employment-type full_time --facet source=greenhouse  # any facet via --facet key=value
+rolewatch search "help kids learn to read" --semantic            # also match postings that say it in other words
 rolewatch market-fit --skills go,docker,react --category backend  # how much of the market your skills cover (+ gaps)
 rolewatch market-fit --skills go --country BR                    # one skill probes that skill's demand under the filter
-rolewatch job <slug>                                            # show a job's full content (incl. posting URL + company slug)
+rolewatch job <slug>                                            # show a job's full content (incl. posting URL + company slug; says CLOSED if it closed)
+rolewatch similar <slug>                                        # postings most like this one, nearest first
 rolewatch company <slug>                                        # show a company and its open jobs
 rolewatch apply <slug>                                          # mark a job applied for your account
 rolewatch apply <slug> --on 2026-07-27                          # ...on the day you actually sent it
@@ -77,7 +83,13 @@ rolewatch unsave <slug>                                         # remove a bookm
 rolewatch stage <slug> <stage>                                  # set application stage (applied→…→offer, or rejected/withdrawn)
 rolewatch note <slug> a quick reminder                          # attach a free-text note (trailing args; no quotes needed)
 rolewatch my --filter applied                                   # tracked jobs, showing stage + note (all|viewed|saved|applied)
-rolewatch contribute <url>                                      # hand rolewatch a job link (see below)
+rolewatch alerts add --skills go --remote --region eu           # a job alert over search's own filters (see below)
+rolewatch alerts list                                           # your alerts: id, filters, channels, paused
+rolewatch alerts update <id> --salary-min 5000                  # change only what you pass
+rolewatch alerts pause <id> / resume <id>                       # hold an alert without losing it
+rolewatch alerts remove <id>                                    # stop it (the saved search stays as a bookmark)
+rolewatch alerts updates                                        # postings your alerts matched this week
+rolewatch contribute <url>                                      # hand RoleWatch a job link (see below)
 rolewatch contributions                                         # boards you've contributed
 rolewatch ghost report <slug> --applied-on 2026-06-01           # you applied that day and were never answered
 rolewatch ghost retract <slug>                                  # withdraw that report
@@ -88,6 +100,16 @@ rolewatch inbox list --link suggested                          # matcher proposa
 rolewatch inbox confirm <id>                                   # accept one of them
 rolewatch inbox application <id> <slug>                        # mail about an untracked application
 ```
+
+**Job alerts.** An alert is a saved search delivered on the channels your account
+has connected — email, Telegram, the mobile app or a webhook — never to the
+terminal. `alerts add` takes `search`'s filter flags (plus `--salary-max`, `--name`
+and repeatable `--channel`) and refuses a search that does not narrow the catalogue;
+run the same flags through `rolewatch search` first to see what it would catch. A
+filter value outside the vocabulary is dropped and named on stderr. On `alerts
+update`, any filter flag replaces the alert's whole filter set (`--clear-filters`
+empties it), so a rename never touches the filters. The commands call the signed-in
+MCP server's alert tools, so they need a browser sign-in or a full-scope key.
 
 **Experience bank.** `experience list` shows every achievement grouped under the
 employment it belongs to (achievements with no place come back under `unplaced`) —
@@ -293,7 +315,14 @@ tool, so an agent loads what the question needs and not the whole surface:
 | [`rolewatch-tailor-cv`](skills/rolewatch-tailor-cv/SKILL.md) | reframing a CV toward one vacancy, and the evidence rule |
 | [`rolewatch-mail-triage`](skills/rolewatch-mail-triage/SKILL.md) | pushing, judging and linking application mail |
 
-Drop them into a Claude Code (or compatible) skills directory, or install this repo as a
+Install them with one command — they ship inside the binary, so no checkout is needed:
+
+```
+rolewatch skills install                    # into ~/.claude/skills
+rolewatch skills install --dir <path>       # another agent's skills folder
+```
+
+Re-running it updates them. Or install this repo as a
 **Claude Code plugin** to get the skills *and* the slash commands wired up automatically:
 
 ```

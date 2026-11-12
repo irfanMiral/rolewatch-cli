@@ -46,6 +46,12 @@ func (e *APIError) Error() string {
 	return fmt.Sprintf("api error %d", e.Status)
 }
 
+// IgnoredValues maps a closed-vocabulary filter to the values the API did not
+// recognise (meta.ignored_values), e.g. {"skills": ["golangg"]}. The twin of
+// IgnoredParam one level down: a known filter carrying an unknown value still
+// narrows — to nothing — so the answer is a confident zero, not an error.
+type IgnoredValues map[string][]string
+
 // IgnoredParam is a query param the API did not read, reported back in `meta`.
 // DidYouMean carries the real facet name when the sent one was only its
 // singular — the common miss, since most facets are plural.
@@ -60,8 +66,9 @@ type IgnoredParam struct {
 // way through would leave a count or a percentage looking authoritative when it
 // answered a wider question than the caller asked.
 type Doc struct {
-	Data    json.RawMessage
-	Ignored []IgnoredParam
+	Data          json.RawMessage
+	Ignored       []IgnoredParam
+	IgnoredValues IgnoredValues
 }
 
 // Page is a slice of list results: the raw `data` array, the total match count
@@ -71,9 +78,16 @@ type Doc struct {
 // request, it widens it, so the count comes back larger and reads as a real
 // answer. Callers surface it rather than dropping it.
 type Page struct {
-	Data    json.RawMessage
-	Total   int
-	Ignored []IgnoredParam
+	Data          json.RawMessage
+	Total         int
+	Ignored       []IgnoredParam
+	IgnoredValues IgnoredValues
+	// Semantic is what became of SearchParams.Semantic: "applied", or "unavailable"
+	// when the API answered with keyword matches only. Empty when not asked.
+	Semantic string
+	// TotalIsLowerBound: Total is "at least this many" (a semantic answer has no count),
+	// and exceeds the rows seen so far only when a next page exists.
+	TotalIsLowerBound bool
 }
 
 // SearchParams are the inputs to a job search: query text, pagination, and
@@ -83,6 +97,8 @@ type SearchParams struct {
 	Limit  int
 	Offset int
 	Facets url.Values
+	// Semantic also matches postings that describe the query in other words.
+	Semantic bool
 }
 
 // envelope is the shared API response wrapper: {data, meta, error}.
@@ -91,6 +107,10 @@ type envelope struct {
 	Meta struct {
 		Total         int            `json:"total"`
 		IgnoredParams []IgnoredParam `json:"ignored_params"`
+		IgnoredValues IgnoredValues  `json:"ignored_values"`
+		Semantic      string         `json:"semantic"`
+		// TotalIsLowerBound is meta.total_is_lower_bound.
+		TotalIsLowerBound bool `json:"total_is_lower_bound"`
 	} `json:"meta"`
 	Error string `json:"error"`
 }
@@ -132,11 +152,18 @@ func (c *Client) Search(ctx context.Context, p SearchParams) (Page, error) {
 	// second was never read, and the API now reports unread params as warnings —
 	// so sending them would hand the user two they cannot act on.
 	q.Set("description_format", "markdown")
+	if p.Semantic {
+		q.Set("semantic", "true")
+	}
 	env, err := c.do(ctx, http.MethodGet, "/api/v1/agent/jobs/search?"+q.Encode(), nil)
 	if err != nil {
 		return Page{}, err
 	}
-	return Page{Data: env.Data, Total: env.Meta.Total, Ignored: env.Meta.IgnoredParams}, nil
+	return Page{
+		Data: env.Data, Total: env.Meta.Total,
+		Ignored: env.Meta.IgnoredParams, IgnoredValues: env.Meta.IgnoredValues,
+		Semantic: env.Meta.Semantic, TotalIsLowerBound: env.Meta.TotalIsLowerBound,
+	}, nil
 }
 
 // CoverageParams is a market-coverage query: Skills is the measured skill list
@@ -169,7 +196,7 @@ func (c *Client) Coverage(ctx context.Context, p CoverageParams) (Doc, error) {
 		path += "?" + enc
 	}
 	env, err := c.do(ctx, http.MethodPost, path, bytes.NewReader(body))
-	return Doc{Data: env.Data, Ignored: env.Meta.IgnoredParams}, err
+	return Doc{Data: env.Data, Ignored: env.Meta.IgnoredParams, IgnoredValues: env.Meta.IgnoredValues}, err
 }
 
 // Facets returns the market's facet-value distributions under an optional filter
@@ -187,7 +214,16 @@ func (c *Client) Facets(ctx context.Context, facets url.Values) (Doc, error) {
 		path += "?" + enc
 	}
 	env, err := c.do(ctx, http.MethodGet, path, nil)
-	return Doc{Data: env.Data, Ignored: env.Meta.IgnoredParams}, err
+	return Doc{Data: env.Data, Ignored: env.Meta.IgnoredParams, IgnoredValues: env.Meta.IgnoredValues}, err
+}
+
+// Similar returns the postings nearest to one posting, nearest first
+// (GET /jobs/:slug/similar). Empty for the newest postings, whose neighbours
+// are not computed yet.
+func (c *Client) Similar(ctx context.Context, slug string, limit int) (json.RawMessage, error) {
+	path := "/api/v1/jobs/" + url.PathEscape(slug) + "/similar?limit=" + strconv.Itoa(limit)
+	env, err := c.do(ctx, http.MethodGet, path, nil)
+	return env.Data, err
 }
 
 // Save bookmarks a job (POST /jobs/:slug/save).
@@ -396,20 +432,30 @@ func (c *Client) RejectSubmission(ctx context.Context, id int64, reason string) 
 	return env.Data, err
 }
 
+// UserAgent names this CLI to the API, so its requests are told apart from every
+// other Go program's in the server and edge logs. The cli package appends the
+// release version at startup.
+var UserAgent = "rolewatch-cli/dev"
+
+// signedInDoor is the API's second address for its whole /api/v1 surface, open only
+// to a caller holding a credential: /api/v1/me/api/<rest> is served as /api/v1/<rest>.
+// The edge challenges traffic from hosting and VPN networks — a challenge a CLI
+// cannot solve — and lets /api/v1/me/ through, because nothing there answers a
+// caller without one.
+const signedInDoor = "/api/v1/me/api"
+
 func (c *Client) do(ctx context.Context, method, path string, body io.Reader) (envelope, error) {
-	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, body)
-	if err != nil {
-		return envelope{}, err
-	}
-	if c.token != "" {
-		req.Header.Set("Authorization", "Bearer "+c.token)
-	}
-	req.Header.Set("Accept", "application/json")
+	// Read once: a challenged request is sent a second time.
+	var payload []byte
 	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
+		b, err := io.ReadAll(body)
+		if err != nil {
+			return envelope{}, err
+		}
+		payload = b
 	}
 
-	resp, err := c.http.Do(req)
+	resp, err := c.exchange(ctx, method, path, payload, "application/json")
 	if err != nil {
 		return envelope{}, err
 	}
@@ -432,6 +478,61 @@ func (c *Client) do(ctx context.Context, method, path string, body io.Reader) (e
 		return envelope{}, &APIError{Status: resp.StatusCode, Message: env.Error}
 	}
 	return env, nil
+}
+
+// exchange sends one request and, when the edge challenges it, sends it once more
+// through the signed-in door.
+func (c *Client) exchange(ctx context.Context, method, path string, payload []byte, accept string) (*http.Response, error) {
+	resp, err := c.send(ctx, method, path, payload, accept)
+	if err != nil || !edgeChallenged(resp) {
+		return resp, err
+	}
+	resp.Body.Close()
+	door, ok := c.doorPath(path)
+	if !ok {
+		msg := "blocked by the network edge, which challenges VPN and hosting networks: retry off the VPN"
+		if c.token == "" {
+			msg += ", or sign in with `rolewatch auth login` (signed-in requests go around it)"
+		}
+		return nil, &APIError{Status: resp.StatusCode, Message: msg}
+	}
+	return c.send(ctx, method, door, payload, accept)
+}
+
+// send makes one request; a nil payload sends no body.
+func (c *Client) send(ctx context.Context, method, path string, payload []byte, accept string) (*http.Response, error) {
+	var body io.Reader
+	if payload != nil {
+		body = bytes.NewReader(payload)
+	}
+	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, body)
+	if err != nil {
+		return nil, err
+	}
+	if c.token != "" {
+		req.Header.Set("Authorization", "Bearer "+c.token)
+	}
+	req.Header.Set("Accept", accept)
+	req.Header.Set("User-Agent", UserAgent)
+	if payload != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	return c.http.Do(req)
+}
+
+// edgeChallenged reports a Cloudflare challenge: a 403 the API never produced.
+func edgeChallenged(resp *http.Response) bool {
+	return resp.StatusCode == http.StatusForbidden && resp.Header.Get("Cf-Mitigated") == "challenge"
+}
+
+// doorPath is path through the signed-in door. False without a credential (the door
+// refuses anonymous callers) and for a path already under /api/v1/me/, where the
+// edge challenge is not something another address can get around.
+func (c *Client) doorPath(path string) (string, bool) {
+	if c.token == "" || !strings.HasPrefix(path, "/api/v1/") || strings.HasPrefix(path, "/api/v1/me/") {
+		return "", false
+	}
+	return signedInDoor + strings.TrimPrefix(path, "/api/v1"), true
 }
 
 // GetProfile reads the caller's saved job-search profile: their specializations,

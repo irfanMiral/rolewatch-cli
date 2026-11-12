@@ -49,6 +49,7 @@ rolewatch search "golang" --remote --region eu --seniority senior
 rolewatch search "data" --country BR --employment-type full_time
 rolewatch search "AI" --country IT --employment-type contract --exclude-skill python
 rolewatch search "backend" --facet source=greenhouse   # any facet via --facet key=value
+rolewatch search "keep our payment systems secure" --semantic   # match by meaning, not only words
 ```
 
 **Query syntax.** The keyword argument is more than a bag of words:
@@ -73,6 +74,13 @@ rolewatch search 'golang OR rust' --remote
 - **Plain words are neither AND nor OR.** The first ones are required and
   trailing ones are dropped when too few match, so word order changes the
   result. Quote the words that must all appear.
+- **`--semantic` when the need is described rather than named.** "keep our
+  payment systems secure" has no job title in it; with `--semantic` it also
+  reaches postings that say the same thing in other words. **Leave it off for a
+  job title** ("react developer") **or a non-technical role** ("nurse night
+  shift"): there it measurably does worse than plain keywords, because only
+  technical postings carry the vectors it matches on. A stderr warning
+  `semantic search unavailable` means the results are keyword-only.
 
 Repeatable filter flags (pass again to OR more values): `--region --country --city
 --company --category --role --seniority --employment-type --english-level
@@ -104,7 +112,12 @@ apply to geography.
 **Read the warnings on stderr.** A filter param the API does not recognize is
 ignored, not refused — the search still runs, just wider. The CLI prints
 `warning: ignored unknown filter "country" — did you mean "countries"?` to stderr
-(stdout stays clean JSON). `search`, `facets` and `market-fit` all report it.
+(stdout stays clean JSON). A known filter given a value outside its vocabulary
+(including an `_exclude` value) prints
+`warning: unrecognised skills value "golangg" — results may not be what you meant`.
+Usually it narrows to nothing, so a typo reads as an empty market. Skill aliases
+(`golang`) resolve on their own; check `rolewatch facets` for the spelling the
+warning rejected. `search`, `facets` and `market-fit` all report both.
 Never quote a number from a run that printed one: the count, the distribution or
 the coverage percentage answers a broader question than the one asked.
 
@@ -115,14 +128,33 @@ single posting's other detail. Keep `--limit` small when you read descriptions.
 **3. Open what looks right.**
 
 ```bash
-rolewatch job <slug>                    # full content + posting URL + company slug
+rolewatch job <slug>                    # full content + posting URL + company slug (CLOSED line if closed)
+rolewatch similar <slug>                # more like this one, nearest first
 rolewatch company <slug>                # a company and its open jobs
 ```
 
 To mark, stage and follow what they applied to, use the
 **rolewatch-track-applications** skill.
 
-## A job rolewatch doesn't have
+## Keep watching: job alerts
+
+When the person wants to hear about new postings for a search, save it as an alert.
+Run the search first so they see what it catches, then create it with the SAME flags:
+
+```bash
+rolewatch alerts add --skills go --remote --region eu --name "Go EU"
+rolewatch alerts list                   # ids, filters, channels, paused
+rolewatch alerts update <id> --salary-min 5000   # pass only what changes
+rolewatch alerts pause <id>             # hold it; resume <id> brings it back
+rolewatch alerts updates                # what the alerts matched lately
+```
+
+Alerts are delivered by email, Telegram, the app or a webhook — never to this
+chat. On `update`, any filter flag replaces the alert's whole filter set, so read
+it from `alerts list --json` (`.alerts[].search`) and pass every filter it should
+keep. To stop one for a while, pause it rather than removing it.
+
+## A job RoleWatch doesn't have
 
 When the person is looking at a vacancy that is not in the catalogue — they pasted a link,
 or a search came up empty for a company you know is hiring — hand it over instead of
